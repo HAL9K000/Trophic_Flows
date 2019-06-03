@@ -17,11 +17,17 @@ class FordFulkerson:
         
         self.string = "fw_tuesday_lake"
         self.DirGraph=nex.read_graphml("Machine_Readable_Data\%s\%s_Annotated.graphml" %(self.string, self.string))
-        self.min_edge_flowval=self.min_node_flowval= 10000
+        self.min_edge_flowval=self.min_node_flowval= 100000
         self.max_edge_flowval=self.max_node_flowval= 0
         #Stores the min and max flow values of edge and vertex cuts out of all 65 possibilities.
         self.min_cap_e= self.max_cap_e=[] #Stores corresponding target node.
         self.min_cap_n= self.max_cap_n=[]
+        
+        self.storage_edge={}
+        #A dict that will store interesting data on edge cuts
+        self.storage_vex={}
+        #A dict that will store interesting data on vertex cuts
+        
         if(os.path.isdir("Results\%s" %(self.string))==False):
             os.mkdir("Results\%s" %(self.string))
         os.chdir("Results\%s" %(self.string))
@@ -42,11 +48,12 @@ class FordFulkerson:
                     self.min_node_cut(n)
                 
             if(i%15==0):
-                #Provides a stop-line after every ten iterations
+                #Provides a stop-line after every fifteen iterations
                 inp=input("This is a stop-line. Press any key to continue.\n")
             
             i+=1
         self.statistics()
+        self.statistics_adv()
         print("Total number of iterations run:\t%d" %(i))
     
     
@@ -101,7 +108,7 @@ class FordFulkerson:
             self.min_edge_flowval=cut_val
             self.min_cap_e=[n]
         
-        if(cut_val==self.min_edge_flowval):
+        elif(cut_val==self.min_edge_flowval):
             #In case of a tie
             self.min_edge_flowval=cut_val
             self.min_cap_e.append(n)
@@ -111,10 +118,16 @@ class FordFulkerson:
             self.max_edge_flowval=cut_val
             self.max_cap_e=[n]
             
-        if(cut_val == self.max_edge_flowval):
+        elif(cut_val == self.max_edge_flowval):
             #In case of a tie.
             self.max_edge_flowval=cut_val
             self.max_cap_e.append(n)
+            
+        temp=edge_cut
+        temp.append(cut_val)
+        self.storage_edge[n]=temp
+        
+        #Storage_edge stores the edge cut tuples of a given target (key) followed by the capacity of the cut.
             
         self.NDiGraph.clear()       #Clear copy
         
@@ -232,6 +245,15 @@ class FordFulkerson:
             self.max_node_flowval=cut_val
             self.max_cap_n.append(n)
             
+        temp=[]    
+        for (x,y) in edge_cut:
+            temp.append(x)
+        temp.append(cut_val)
+        
+        self.storage_vex[n]=temp
+        
+        #Storage_vex stores the vertices of a given target (key) followed by the capacity of the cut.
+            
         self.NDiGraph.clear()       #Clear copy
                 
         
@@ -255,6 +277,93 @@ class FordFulkerson:
         stat.write("Corresponding Target Nodes\t:"+ str(self.max_cap_n)+"\n")
         
         stat.flush(); stat.close()
+        
+        
+    def statistics_adv(self):       #Finds and presents more detailed insights into the generated data.
+        
+        trophiclvl=nex.get_node_attributes(self.DirGraph, 'trophic')
+        top=max(list(trophiclvl.values())) #Finds max trophic value
+        
+        stat=open("Adv_Stat_Log.txt", 'w')
+        
+        trp_num=0
+        edgecut_sum=0.0
+        edgeflow_val_sum=0.0
+        for v in list(self.DirGraph.nodes()):
+            
+            if (trophiclvl[v]==0):
+                #Iterating through species in the 0th trophic level.
+                trp_num+=1
+                ops=self.storage_edge[v]
+                # black ops stores all the data related to min edge cut of graph with sink 'v'
+                edgeflow_val= ops.pop()
+                edgecut_sum += len(ops)
+                edgeflow_val_sum += edgeflow_val
+        
+        avg_edge_cut= float(edgecut_sum/trp_num)
+        avg_flow_val= float(edgeflow_val_sum/trp_num)
+        
+        print("Number of species in 0th Trophic Level:\t%d\n" %(trp_num))
+        stat.write("Number of species in 0th Trophic Level:\t%2.0f\n\n" %(trp_num))
+        print("Average size of edge-cut in 0th Trophic Level:\t%5.3f" %(avg_edge_cut))
+        stat.write("Average size of edge-cut in 0th Trophic Level:\t%5.3f\n" %(avg_edge_cut))
+        print("Average flow-value (capacity) of edge-cut in 0th Trophic Level:\t%5.3f" %(avg_flow_val))
+        stat.write("Average flow-value (capacity) of edge-cut in 0th Trophic Level:\t%8.4f\n" %(avg_flow_val))
+        
+        stat.write("\t\t\t***\n")
+        print("\t\t\t***\n")
+        
+        
+        for trp in range(1,top+1):
+            #Iterating through all trophic levels from 1 to top.
+            trp_num=0
+            #Number of species in a given trophic level.
+            edgecut_sum= vercut_sum = 0.0
+            edgeflow_val_sum= verflow_val_sum= 0.0
+            
+            for v in list(self.DirGraph.nodes()):
+                #Iterating through all vertices.
+                if (trophiclvl[v]==trp):
+                    trp_num+=1  
+                    ops_ee=self.storage_edge[v]
+                    ops_v=self.storage_vex[v]
+                    # black ops stores all the data related to min edge & vertex cut of graph with sink 'v'
+                    edgeflow_val= ops_ee.pop()
+                    verflow_val=ops_v.pop()
+                    
+                    edgecut_sum += len(ops_ee)
+                    edgeflow_val_sum += edgeflow_val
+                    #Calculating statistics of edge cut
+                    vercut_sum += len(ops_v)
+                    verflow_val_sum += verflow_val
+                    #Calculating statistics of vertex cut
+            
+            avg_edge_cut= float(edgecut_sum/trp_num)
+            avg_edge_flow_val= float(edgeflow_val_sum/trp_num)
+            avg_node_cut= float(vercut_sum/trp_num)
+            avg_node_flow_val= float(verflow_val_sum/trp_num)
+            
+            print("Number of species in %dth Trophic Level:\t%d\n" %(trp, trp_num))
+            stat.write("Number of species in %dth Trophic Level:\t%2.0f\n\n" %(trp, trp_num))
+            print("Average size of edge-cut in %dth Trophic Level:\t%5.3f" %(trp, avg_edge_cut))
+            stat.write("Average size of edge-cut in %dth Trophic Level:\t%5.3f\n" %(trp, avg_edge_cut))
+            print("Average flow-value (capacity) of edge-cut in %dth Trophic Level:\t%5.3f\n" %(trp, avg_edge_flow_val))
+            stat.write("Average flow-value (capacity) of edge-cut in %dth Trophic Level:\t%8.4f\n\n" %(trp, avg_edge_flow_val))
+            
+            print("Average size of vertex-cut in %dth Trophic Level:\t%5.3f" %(trp, avg_node_cut))
+            stat.write("Average size of vertex-cut in %dth Trophic Level:\t%5.3f\n" %(trp, avg_node_cut))
+            print("Average flow-value (capacity) of vertex-cut in %dth Trophic Level:\t%5.3f\n" %(trp, avg_node_flow_val))
+            stat.write("Average flow-value (capacity) of vertex-cut in %dth Trophic Level:\t%8.4f\n" %(trp, avg_node_flow_val))
+            
+            stat.write("\t\t\t***\n")
+            
+        
+        
+        
+        stat.flush(); stat.close()
+                    
+                
+        
                 
 obj=FordFulkerson()
                 
