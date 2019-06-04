@@ -7,15 +7,18 @@ Created on Fri May 31 12:51:59 2019
 
 
 import os
-#import matplotlib.pyplot as plt
+import matplotlib.pyplot as plt
+import seaborn as sea
 import networkx as nex
 import copy
+import pandas as pan
+
 
 class FordFulkerson:
     
     def __init__(self):
         
-        self.string = "fw_tuesday_lake"
+        self.string = "fw_coachella"
         self.DirGraph=nex.read_graphml("Machine_Readable_Data\%s\%s_Annotated.graphml" %(self.string, self.string))
         self.min_edge_flowval=self.min_node_flowval= 100000
         self.max_edge_flowval=self.max_node_flowval= 0
@@ -47,7 +50,7 @@ class FordFulkerson:
                     self.node_trans(n)
                     self.min_node_cut(n)
                 
-            if(i%15==0):
+            if(i%19==0):
                 #Provides a stop-line after every fifteen iterations
                 inp=input("This is a stop-line. Press any key to continue.\n")
             
@@ -257,7 +260,7 @@ class FordFulkerson:
         self.NDiGraph.clear()       #Clear copy
                 
         
-    def statistics(self):  #Noting the overall trends in vertex and edge cuts.
+    def statistics(self):  #Noting the overall trends in vertex and edge cuts and creating master-binder.
         
         if(os.path.isdir("General Statistics")==False):
             os.mkdir("General Statistics")
@@ -278,10 +281,65 @@ class FordFulkerson:
         
         stat.flush(); stat.close()
         
+        #Creating the master-binder
+        
+        self.masterbinder={}
+        #Stores data about the edges and nodes and can be used for visualisation.
+        #Creating keys
+        self.masterbinder['Vertex ID']=[]
+        self.masterbinder['Trophic Level']=[]
+        self.masterbinder['# of Edge Cuts']=[]
+        self.masterbinder['Capacity of Edge Cuts']=[]
+        self.masterbinder['# of Vertex Cuts']=[]
+        self.masterbinder['Capacity of Vertex Cuts']=[]
+        
+        trophiclvl=nex.get_node_attributes(self.DirGraph,'trophic')
+        #Formulating values for all the above keys      
+        for x, y in trophiclvl.items():
+            if( x!= 's' and y !=0):
+                #Producers and sink not included
+                self.masterbinder['Vertex ID'].append(x)
+                self.masterbinder['Trophic Level'].append(y)
+                #print("Before:\t%d" %(len(self.storage_edge[x])))
+                ops=copy.copy(self.storage_edge[x])
+                flowval=ops.pop()
+                #print("After:\t%d" %(len(self.storage_edge[x])))
+                self.masterbinder['# of Edge Cuts'].append(len(ops))
+                self.masterbinder['Capacity of Edge Cuts'].append(flowval)
+                ops=copy.copy(self.storage_vex[x])
+                flowval=ops.pop()
+                self.masterbinder['# of Vertex Cuts'].append(len(ops))
+                self.masterbinder['Capacity of Vertex Cuts'].append(flowval)
+                
+            elif(y==0):
+                #At trophic level 0 (Producers)
+                self.masterbinder['Vertex ID'].append(x)
+                self.masterbinder['Trophic Level'].append(y)
+                ops=copy.copy(self.storage_edge[x])
+                flowval=ops.pop()
+                self.masterbinder['# of Edge Cuts'].append(len(ops))
+                self.masterbinder['Capacity of Edge Cuts'].append(flowval)
+                
+                self.masterbinder['# of Vertex Cuts'].append(0)
+                self.masterbinder['Capacity of Vertex Cuts'].append(0)
+                
+                
         
     def statistics_adv(self):       #Finds and presents more detailed insights into the generated data.
         
+        if(os.path.isdir("Trophic Statistics")==False):
+            os.mkdir("Trophic Statistics")
+        os.chdir("Trophic Statistics")
+        #Changing the directory
+        
+        self.trophic_fuel()
+        
+        
+        
+        
+    def trophic_fuel(self):     #Presents details about the Trophic level architecture and stability of network.
         trophiclvl=nex.get_node_attributes(self.DirGraph, 'trophic')
+        
         top=max(list(trophiclvl.values())) #Finds max trophic value
         
         stat=open("Adv_Stat_Log.txt", 'w')
@@ -294,7 +352,7 @@ class FordFulkerson:
             if (trophiclvl[v]==0):
                 #Iterating through species in the 0th trophic level.
                 trp_num+=1
-                ops=self.storage_edge[v]
+                ops=copy.copy(self.storage_edge[v])
                 # black ops stores all the data related to min edge cut of graph with sink 'v'
                 edgeflow_val= ops.pop()
                 edgecut_sum += len(ops)
@@ -325,8 +383,8 @@ class FordFulkerson:
                 #Iterating through all vertices.
                 if (trophiclvl[v]==trp):
                     trp_num+=1  
-                    ops_ee=self.storage_edge[v]
-                    ops_v=self.storage_vex[v]
+                    ops_ee=copy.copy(self.storage_edge[v])
+                    ops_v=copy.copy(self.storage_vex[v])
                     # black ops stores all the data related to min edge & vertex cut of graph with sink 'v'
                     edgeflow_val= ops_ee.pop()
                     verflow_val=ops_v.pop()
@@ -358,10 +416,69 @@ class FordFulkerson:
             stat.write("\t\t\t***\n")
             
         
-        
-        
+     
         stat.flush(); stat.close()
-                    
+        
+        self.trophic_visualisation()
+        
+        
+    def trophic_visualisation(self): #Create a DataFrame to visualise scatterplots and graph them.
+        
+        if(os.path.isdir("Plots")==False):
+            os.mkdir("Plots")
+        os.chdir("Plots")
+        #Changing the directory
+        
+        jailkeeper=pan.DataFrame(self.masterbinder)
+        print(jailkeeper)
+        print("Height of data frame is:\t%d" %(len(jailkeeper.index)))
+        
+        g1= sea.catplot(x='Trophic Level', y='# of Edge Cuts', kind="strip", data=jailkeeper)
+        
+        plt.savefig("# Edges_Scatterplot.png", dpi=300)
+        plt.show()
+        plt.close()
+        
+        g2= sea.catplot(x='Trophic Level', y='# of Vertex Cuts', kind="strip", data=jailkeeper)
+        plt.savefig("# Vertices_Scatterplot.png", dpi=300)
+        plt.show()
+        plt.close()
+        
+        g3= sea.catplot(x='Trophic Level', y='Capacity of Edge Cuts', kind="strip", data=jailkeeper)
+        plt.savefig("Capacity Edge Cut_Scatterplot.png", dpi=300)
+        plt.show()
+        plt.close()
+        
+        g4= sea.catplot(x='Trophic Level', y='Capacity of Vertex Cuts', kind="strip", data=jailkeeper)
+        plt.savefig("Capacity Vertex Cut_Scatterplot.png", dpi=300)
+        plt.show()
+        plt.close()
+
+        #Plotting box-plots
+
+        g1 = sea.boxplot(x='Trophic Level', y='# of Edge Cuts', data=jailkeeper)
+        g1 = sea.swarmplot(x='Trophic Level', y='# of Edge Cuts', data=jailkeeper, color=".25")
+        plt.savefig("# Edges_Boxplot.png", dpi=300)
+        plt.show()
+        plt.close()
+        
+        g2 = sea.boxplot(x='Trophic Level', y='# of Vertex Cuts', data=jailkeeper)
+        g2 = sea.swarmplot(x='Trophic Level', y='# of Vertex Cuts', data=jailkeeper, color=".25")
+        plt.savefig("# Vertex_Boxplot.png", dpi=300)
+        plt.show()
+        plt.close()
+        
+        g3 = sea.boxplot(x='Trophic Level', y='Capacity of Edge Cuts', data=jailkeeper)
+        g3 = sea.swarmplot(x='Trophic Level', y='Capacity of Edge Cuts', data=jailkeeper, color=".25")
+        plt.savefig("Capacity Edge Cut_Boxplot.png", dpi=300)
+        plt.show()
+        plt.close()
+        
+        g4 = sea.boxplot(x='Trophic Level', y='Capacity of Vertex Cuts', data=jailkeeper)
+        g4 = sea.swarmplot(x='Trophic Level', y='Capacity of Vertex Cuts', data=jailkeeper, color=".25")
+        plt.savefig("Capacity Vertex Cut_Boxplot.png", dpi=300)
+        plt.show()
+        plt.close()
                 
         
                 
