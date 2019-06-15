@@ -18,7 +18,7 @@ class FordFulkerson:
     
     def __init__(self):
         
-        self.string = "fw_coachella"
+        self.string = "fw_tuesday_lake"
         self.DirGraph=nex.read_graphml("Machine_Readable_Data\%s\%s_Annotated.graphml" %(self.string, self.string))
         self.min_edge_flowval=self.min_node_flowval= 100000
         self.max_edge_flowval=self.max_node_flowval= 0
@@ -422,7 +422,7 @@ class FordFulkerson:
         self.trophic_visualisation()
         
         
-    def trophic_visualisation(self): #Create a DataFrame to visualise scatterplots and graph them.
+    def trophic_visualisation(self): #Visualising various plots.
         
         if(os.path.isdir("Plots")==False):
             os.mkdir("Plots")
