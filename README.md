@@ -41,16 +41,20 @@ Additionally, applications such as [Cytoscape](https://cytoscape.org/ "Cytoscape
 * Run *I0.py*. The annotated graph (with trophic level of nodes, edge and node capacities automatically assigned) will be saved in the directory *"Machine_Readable_Data"*.
 
 * Next, similarly, change the assigned value to `self.string` in *Ford_Fulkerson.py* (under `__init__(self)`) to:
+
       self.string = "dilettante"
+
 and execute. The output will similarly be saved in *.graphml* format to the *"Results"* directory.
 
 * To analyse the connectance in *dilettante* between trophic levels, run it through *ConnecFinder.py* having made the same changes to `self.string` in *ConnecFinder.py* as above. Make sure you run *I0.py* before this.
 
-* After having run *I0.py* and *ConnecFinder.py* (in that order) for *dilettante*, if you choose, you can make an artificial network based on the connectance data of *dilettante* by running *ArcNet.py*. By default, it will create an artificial network of 24 nodes, but you can modify this as you see fit by altering
+* After having run *I0.py* and *ConnecFinder.py* (in that order) for *dilettante*, if you choose, you can make an artificial network based on the connectance data of *dilettante* by running *ArcNet.py*. By default, it will create an artificial network of 24 nodes, but you can modify this as you see fit by altering:
+
       self.n = 24
+
 under `__init__(self)` accordingly.
 
-* *ArcNet.py* also provides a few pre-defined trophic configurations *(default number of trophic levels= 3)* for the artificially generated networks such as *Pyramidal* (represented by *'Tr'*), *Rectangular* (represented by *'Rect'*), *Diamond* (represented by *'Dia'*) and so on. Alternatively, you can choose your own node distribution and the number of trophic levels for the artificial network. The generated trophic network is outputted in .graphml format which can in turn be fed into *"Ford_Fulkerson.py"* for min edge and vetrex cut information.
+* *ArcNet.py* also provides a few pre-defined trophic configurations *(default number of trophic levels= 3)* for the artificially generated networks such as *Pyramidal* (represented by *'Tr'*), *Rectangular* (represented by *'Rect'*), *Diamond* (represented by *'Dia'*) and so on. Alternatively, you can choose your own node distribution and the number of trophic levels for the artificial network. The generated trophic network is outputted in .graphml format which can in turn be fed into *"Ford_Fulkerson.py"* for min edge and vertex cut information.
 
 ## References:
 
