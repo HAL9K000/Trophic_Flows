@@ -67,6 +67,8 @@ class ConnectednessDet:
                     #If they fit the bill of the trophic level.
                     self.conn_dict[(x,y)]+=1                
             self.conn_dict[(x,y)]=self.conn_dict[(x,y)]/(p[x]*p[y])
+            '''Connectance is defined as edges present between two trophic levels divided 
+            by total no of edges possible b/w the given trophic lvl.'''
         
         print(self.conn_dict)
         

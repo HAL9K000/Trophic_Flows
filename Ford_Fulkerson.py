@@ -18,7 +18,7 @@ class FordFulkerson:
     
     def __init__(self):
         
-        self.string = "fw_tuesday_lake"
+        self.string = "fw_ArtNet_Rect"
         self.DirGraph=nex.read_graphml("Machine_Readable_Data\%s\%s_Annotated.graphml" %(self.string, self.string))
         self.min_edge_flowval=self.min_node_flowval= 100000
         self.max_edge_flowval=self.max_node_flowval= 0

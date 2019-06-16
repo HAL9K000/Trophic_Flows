@@ -15,7 +15,7 @@ class I_O:
     
     def __init__(self):
         os.chdir("CSV Data")
-        self.string = "fw_ythan91"
+        self.string = "fw_tuesday_lake"
         self.foodweb= np.genfromtxt("%s.csv" %(self.string), delimiter=',')
         print(len(self.foodweb))
         os.chdir("../")
