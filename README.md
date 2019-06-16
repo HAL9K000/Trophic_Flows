@@ -44,7 +44,7 @@ Additionally, applications such as [Cytoscape](https://cytoscape.org/ "Cytoscape
 
       self.string = "dilettante"
 
-and execute. The output will similarly be saved in *.graphml* format to the *"Results"* directory.
+  and execute. The output will similarly be saved in *.graphml* format to the *"Results"* directory.
 
 * To analyse the connectance in *dilettante* between trophic levels, run it through *ConnecFinder.py* having made the same changes to `self.string` in *ConnecFinder.py* as above. Make sure you run *I0.py* before this.
 
@@ -52,7 +52,7 @@ and execute. The output will similarly be saved in *.graphml* format to the *"Re
 
       self.n = 24
 
-under `__init__(self)` accordingly.
+  under `__init__(self)` accordingly.
 
 * *ArcNet.py* also provides a few pre-defined trophic configurations *(default number of trophic levels= 3)* for the artificially generated networks such as *Pyramidal* (represented by *'Tr'*), *Rectangular* (represented by *'Rect'*), *Diamond* (represented by *'Dia'*) and so on. Alternatively, you can choose your own node distribution and the number of trophic levels for the artificial network. The generated trophic network is outputted in .graphml format which can in turn be fed into *"Ford_Fulkerson.py"* for min edge and vertex cut information.
 
