@@ -1,0 +1,3 @@
+Max Flow Value:	4500
+Node Cut:
+41	9	4	11	26	

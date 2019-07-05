@@ -36,15 +36,15 @@
 </node>
 <node id="8">
   <data key="d0">1</data>
-  <data key="d1">100</data>
+  <data key="d1">301</data>
 </node>
 <node id="9">
   <data key="d0">1</data>
-  <data key="d1">100</data>
+  <data key="d1">400</data>
 </node>
 <node id="10">
   <data key="d0">1</data>
-  <data key="d1">301</data>
+  <data key="d1">200</data>
 </node>
 <node id="11">
   <data key="d0">1</data>
@@ -52,7 +52,7 @@
 </node>
 <node id="12">
   <data key="d0">1</data>
-  <data key="d1">200</data>
+  <data key="d1">100</data>
 </node>
 <node id="13">
   <data key="d0">1</data>
@@ -60,15 +60,15 @@
 </node>
 <node id="14">
   <data key="d0">1</data>
-  <data key="d1">300</data>
+  <data key="d1">100</data>
 </node>
 <node id="15">
   <data key="d0">1</data>
-  <data key="d1">200</data>
+  <data key="d1">100</data>
 </node>
 <node id="16">
   <data key="d0">2</data>
-  <data key="d1">30</data>
+  <data key="d1">40</data>
 </node>
 <node id="17">
   <data key="d0">2</data>
@@ -76,19 +76,19 @@
 </node>
 <node id="18">
   <data key="d0">2</data>
-  <data key="d1">20</data>
+  <data key="d1">30</data>
 </node>
 <node id="19">
   <data key="d0">2</data>
-  <data key="d1">30</data>
+  <data key="d1">40</data>
 </node>
 <node id="20">
   <data key="d0">2</data>
-  <data key="d1">50</data>
+  <data key="d1">40</data>
 </node>
 <node id="21">
   <data key="d0">2</data>
-  <data key="d1">40</data>
+  <data key="d1">30</data>
 </node>
 <node id="22">
   <data key="d0">2</data>
@@ -96,129 +96,132 @@
 </node>
 <node id="23">
   <data key="d0">2</data>
-  <data key="d1">40</data>
+  <data key="d1">30</data>
 </node>
 <node id="s">
   <data key="d0">-1</data>
 </node>
-<edge source="0" target="15">
+<edge source="0" target="11">
   <data key="d2">100</data>
 </edge>
-<edge source="0" target="13">
+<edge source="0" target="9">
   <data key="d2">100</data>
 </edge>
-<edge source="1" target="15">
-  <data key="d2">100</data>
-</edge>
-<edge source="1" target="11">
-  <data key="d2">100</data>
-</edge>
-<edge source="2" target="13">
+<edge source="0" target="10">
   <data key="d2">100</data>
 </edge>
 <edge source="2" target="14">
   <data key="d2">100</data>
 </edge>
-<edge source="4" target="14">
+<edge source="2" target="8">
   <data key="d2">100</data>
 </edge>
-<edge source="4" target="12">
+<edge source="2" target="13">
   <data key="d2">100</data>
 </edge>
-<edge source="4" target="10">
+<edge source="3" target="8">
   <data key="d2">100</data>
 </edge>
-<edge source="5" target="10">
+<edge source="4" target="9">
   <data key="d2">100</data>
 </edge>
-<edge source="5" target="11">
+<edge source="4" target="13">
   <data key="d2">100</data>
 </edge>
-<edge source="6" target="9">
+<edge source="5" target="13">
   <data key="d2">100</data>
 </edge>
-<edge source="6" target="8">
+<edge source="5" target="15">
   <data key="d2">100</data>
 </edge>
 <edge source="6" target="12">
   <data key="d2">100</data>
 </edge>
-<edge source="6" target="14">
+<edge source="6" target="11">
+  <data key="d2">100</data>
+</edge>
+<edge source="6" target="9">
   <data key="d2">100</data>
 </edge>
 <edge source="6" target="13">
   <data key="d2">100</data>
 </edge>
-<edge source="7" target="13">
+<edge source="7" target="10">
   <data key="d2">100</data>
 </edge>
-<edge source="7" target="10">
+<edge source="7" target="8">
+  <data key="d2">100</data>
+</edge>
+<edge source="7" target="9">
   <data key="d2">100</data>
 </edge>
 <edge source="8" target="19">
   <data key="d2">10</data>
 </edge>
-<edge source="8" target="22">
+<edge source="8" target="17">
   <data key="d2">10</data>
 </edge>
-<edge source="8" target="23">
-  <data key="d2">10</data>
-</edge>
-<edge source="8" target="16">
-  <data key="d2">10</data>
-</edge>
-<edge source="9" target="17">
+<edge source="8" target="20">
   <data key="d2">10</data>
 </edge>
 <edge source="9" target="16">
   <data key="d2">10</data>
 </edge>
-<edge source="9" target="20">
+<edge source="9" target="18">
   <data key="d2">10</data>
 </edge>
-<edge source="9" target="21">
+<edge source="9" target="22">
   <data key="d2">10</data>
 </edge>
-<edge source="10" target="18">
+<edge source="10" target="23">
   <data key="d2">10</data>
 </edge>
-<edge source="10" target="16">
-  <data key="d2">10</data>
-</edge>
-<edge source="10" target="20">
-  <data key="d2">10</data>
-</edge>
-<edge source="10" target="19">
-  <data key="d2">10</data>
-</edge>
-<edge source="11" target="21">
+<edge source="10" target="21">
   <data key="d2">10</data>
 </edge>
 <edge source="11" target="17">
   <data key="d2">10</data>
 </edge>
-<edge source="11" target="22">
+<edge source="11" target="19">
   <data key="d2">10</data>
 </edge>
-<edge source="12" target="23">
+<edge source="11" target="18">
+  <data key="d2">10</data>
+</edge>
+<edge source="11" target="20">
+  <data key="d2">10</data>
+</edge>
+<edge source="12" target="19">
   <data key="d2">10</data>
 </edge>
 <edge source="12" target="17">
   <data key="d2">10</data>
 </edge>
-<edge source="13" target="20">
+<edge source="12" target="16">
   <data key="d2">10</data>
 </edge>
 <edge source="13" target="23">
   <data key="d2">10</data>
 </edge>
+<edge source="13" target="16">
+  <data key="d2">10</data>
+</edge>
+<edge source="13" target="21">
+  <data key="d2">10</data>
+</edge>
+<edge source="13" target="18">
+  <data key="d2">10</data>
+</edge>
+<edge source="14" target="19">
+  <data key="d2">10</data>
+</edge>
 <edge source="14" target="20">
   <data key="d2">10</data>
 </edge>
-<edge source="14" target="21">
+<edge source="14" target="16">
   <data key="d2">10</data>
 </edge>
-<edge source="15" target="23">
+<edge source="14" target="22">
   <data key="d2">10</data>
 </edge>
 <edge source="15" target="21">
@@ -227,19 +230,16 @@
 <edge source="15" target="20">
   <data key="d2">10</data>
 </edge>
-<edge source="15" target="18">
-  <data key="d2">10</data>
-</edge>
-<edge source="15" target="19">
-  <data key="d2">10</data>
-</edge>
 <edge source="15" target="22">
+  <data key="d2">10</data>
+</edge>
+<edge source="15" target="23">
   <data key="d2">10</data>
 </edge>
 <edge source="15" target="17">
   <data key="d2">10</data>
 </edge>
-<edge source="22" target="10">
+<edge source="19" target="8">
   <data key="d2">1</data>
 </edge>
 <edge source="s" target="0">

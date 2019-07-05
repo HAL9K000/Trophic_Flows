@@ -12,7 +12,7 @@ class ConnectednessDet:
     
     
     def __init__(self):
-        self.string = "fw_tuesday_lake"
+        self.string = "fw_ythan91"
         self.DirGraph=nex.read_graphml("Machine_Readable_Data\%s\%s_Annotated.graphml" %(self.string, self.string))
         self.trophiclvl=nex.get_node_attributes(self.DirGraph, 'trophic')
         '''Stores trophic level information as a dict with node labels serving as keys and corresponding trophic levels

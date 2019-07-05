@@ -18,7 +18,8 @@ class FordFulkerson:
     
     def __init__(self):
         
-        self.string = "fw_ArtNet_Rect"
+        self.string = "fw_tuesday_lake"
+        print("Baghdad")
         self.DirGraph=nex.read_graphml("Machine_Readable_Data\%s\%s_Annotated.graphml" %(self.string, self.string))
         self.min_edge_flowval=self.min_node_flowval= 100000
         self.max_edge_flowval=self.max_node_flowval= 0
@@ -46,12 +47,12 @@ class FordFulkerson:
                 #Not sink or producers
                 self.min_edge_cut(n)
                 if (trophiclvl[n] !=0):
-                    #If producer, only way for it to go extinct is to remove the source or theprducer itself.
+                    #If producer, only way for it to go extinct is to remove the source or the producer itself.
                     self.node_trans(n)
                     self.min_node_cut(n)
                 
-            if(i%19==0):
-                #Provides a stop-line after every fifteen iterations
+            if(i%200==0):
+                #Provides a stop-line after every 200 iterations
                 inp=input("This is a stop-line. Press any key to continue.\n")
             
             i+=1
@@ -98,6 +99,7 @@ class FordFulkerson:
                 print("Rose")
                 #This is an edge that got cut in Min-cut.
                 self.NDiGraph[x[0]][x[1]]['colour']='red'
+                #Labelling coloured edges red.
         
         nex.write_graphml(self.NDiGraph, '%s_Tar_%d_Col.graphml' %(self.string, int(n)))
         #Outputting colour coded graph in graphml format.
@@ -280,6 +282,13 @@ class FordFulkerson:
         stat.write("Corresponding Target Nodes\t:"+ str(self.max_cap_n)+"\n")
         
         stat.flush(); stat.close()
+        
+        self.min_edge_flowval=self.min_node_flowval= 100000
+        self.max_edge_flowval=self.max_node_flowval= 0
+        #Resetting the values of self.min_edge.....
+        
+        self.min_cap_e= self.max_cap_e=[] #Resetting to factory defaults.
+        self.min_cap_n= self.max_cap_n=[]
         
         #Creating the master-binder
         

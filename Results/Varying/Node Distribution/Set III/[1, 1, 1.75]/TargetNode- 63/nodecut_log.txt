@@ -1,0 +1,3 @@
+Max Flow Value:	530
+Node Cut:
+34	18	23	

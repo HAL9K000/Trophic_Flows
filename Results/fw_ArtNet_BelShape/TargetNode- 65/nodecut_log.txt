@@ -1,0 +1,3 @@
+Max Flow Value:	900
+Node Cut:
+59	56	30	52	

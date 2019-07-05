@@ -1,0 +1,3 @@
+Max Flow Value:	2010
+Node Cut:
+5	3	51	

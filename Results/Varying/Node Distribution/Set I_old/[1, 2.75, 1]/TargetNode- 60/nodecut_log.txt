@@ -1,0 +1,3 @@
+Max Flow Value:	900
+Node Cut:
+47	43	45	27	30	15	

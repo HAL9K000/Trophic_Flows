@@ -1,0 +1,3 @@
+Max Flow Value:	2020
+Node Cut:
+21	59	16	

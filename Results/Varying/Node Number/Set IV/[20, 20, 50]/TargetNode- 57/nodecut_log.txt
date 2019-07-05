@@ -1,0 +1,3 @@
+Max Flow Value:	374
+Node Cut:
+38	59	35	45	

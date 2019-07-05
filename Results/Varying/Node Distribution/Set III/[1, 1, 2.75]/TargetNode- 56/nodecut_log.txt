@@ -1,0 +1,3 @@
+Max Flow Value:	264
+Node Cut:
+57	62	33	20	14	

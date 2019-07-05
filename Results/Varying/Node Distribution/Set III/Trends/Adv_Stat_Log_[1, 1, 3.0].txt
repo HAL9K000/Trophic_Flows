@@ -1,0 +1,21 @@
+Number of species in 0th Trophic Level:	14
+
+Average size of edge-cut in 0th Trophic Level:	1.000
+Average flow-value (capacity) of edge-cut in 0th Trophic Level:	1000.0000
+			***
+Number of species in 1th Trophic Level:	14
+
+Average size of edge-cut in 1th Trophic Level:	2.357
+Average flow-value (capacity) of edge-cut in 1th Trophic Level:	156.6429
+
+Average size of vertex-cut in 1th Trophic Level:	2.286
+Average flow-value (capacity) of vertex-cut in 1th Trophic Level:	1579.7857
+			***
+Number of species in 2th Trophic Level:	42
+
+Average size of edge-cut in 2th Trophic Level:	2.619
+Average flow-value (capacity) of edge-cut in 2th Trophic Level:	 16.3333
+
+Average size of vertex-cut in 2th Trophic Level:	2.571
+Average flow-value (capacity) of vertex-cut in 2th Trophic Level:	255.4762
+			***

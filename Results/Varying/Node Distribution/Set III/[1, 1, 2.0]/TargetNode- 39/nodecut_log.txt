@@ -1,0 +1,3 @@
+Max Flow Value:	363
+Node Cut:
+34	44	30	25	

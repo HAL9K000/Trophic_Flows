@@ -1,0 +1,3 @@
+Max Flow Value:	377
+Node Cut:
+80	73	77	28	

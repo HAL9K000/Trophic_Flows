@@ -1,0 +1,3 @@
+Max Flow Value:	20
+Edge Cut:
+[('7', '13'), ('10', '13')]

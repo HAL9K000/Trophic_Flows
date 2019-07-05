@@ -1,0 +1,3 @@
+Max Flow Value:	2022
+Node Cut:
+59	4	8	

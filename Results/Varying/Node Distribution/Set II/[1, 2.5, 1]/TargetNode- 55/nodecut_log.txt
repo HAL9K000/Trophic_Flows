@@ -1,0 +1,3 @@
+Max Flow Value:	760
+Node Cut:
+49	21	34	23	

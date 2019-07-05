@@ -1,0 +1,3 @@
+Max Flow Value:	1020
+Node Cut:
+43	44	56	

@@ -1,0 +1,3 @@
+Max Flow Value:	702
+Node Cut:
+40	41	54	55	

@@ -1,0 +1,3 @@
+Max Flow Value:	1530
+Node Cut:
+44	32	23	

@@ -1,0 +1,3 @@
+Max Flow Value:	900
+Node Cut:
+52	35	33	30	23	

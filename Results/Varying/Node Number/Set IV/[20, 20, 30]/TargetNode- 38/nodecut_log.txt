@@ -1,0 +1,3 @@
+Max Flow Value:	3150
+Node Cut:
+60	14	35	11	4	

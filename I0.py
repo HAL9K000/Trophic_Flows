@@ -8,6 +8,7 @@ Created on Fri May 31 10:38:37 2019
 import os
 import networkx as nex
 import numpy as np
+import matplotlib.pyplot as plt
 
 ''' This is a script that takes a CSV file and coverts it to machine readable format and tags it with
      perceived trophic level data'''
@@ -19,6 +20,12 @@ class I_O:
         self.foodweb= np.genfromtxt("%s.csv" %(self.string), delimiter=',')
         print(len(self.foodweb))
         os.chdir("../")
+        os.chdir("Machine_Readable_Data\Mult")
+        print("Roja")
+        os.chdir("../../")
+        os.chdir("Machine_Readable_Data\%s" %(self.string))
+        print("Toja")
+        os.chdir("../../")
         
     def control_panel(self):
         self.creator()
@@ -164,6 +171,12 @@ class I_O:
         nex.write_graphml(self.DirGraph, '%s_Annotated.graphml' %(self.string))
         #Outputting min vertex cut graph in graphml format
         f.flush(), f.close()
+        
+        nex.draw_kamada_kawai(self.DirGraph, with_labels=True)
+        plt.axis('off')
+        plt.savefig("Plot_%s.png" %(self.string), dpi=300)
+        plt.show()
+        plt.close()
         
 obj=I_O()
 if __name__ == '__main__':

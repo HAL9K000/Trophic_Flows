@@ -1,0 +1,3 @@
+Max Flow Value:	371
+Node Cut:
+22	64	23	42	15	

@@ -1,0 +1,3 @@
+Max Flow Value:	561
+Node Cut:
+34	54	33	26	

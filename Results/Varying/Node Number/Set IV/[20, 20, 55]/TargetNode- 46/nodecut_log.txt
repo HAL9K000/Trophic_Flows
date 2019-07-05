@@ -1,0 +1,3 @@
+Max Flow Value:	652
+Node Cut:
+32	37	61	75	

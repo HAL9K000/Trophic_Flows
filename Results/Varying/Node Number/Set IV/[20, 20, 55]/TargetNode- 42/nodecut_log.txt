@@ -1,0 +1,3 @@
+Max Flow Value:	635
+Node Cut:
+60	33	67	39	92	22	54	

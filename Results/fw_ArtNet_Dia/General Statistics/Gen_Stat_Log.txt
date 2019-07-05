@@ -1,0 +1,8 @@
+Min Edge Cut Flow Value: 30
+Corresponding Target Nodes	:['22']
+Max Edge Cut Flow Value: 1000
+Corresponding Target Nodes	:['0', '1', '2', '3', '4', '5']
+Min Node Cut Flow Value: 700
+Corresponding Target Nodes	:['22']
+Max Node Cut Flow Value: 3000
+Corresponding Target Nodes	:['15']

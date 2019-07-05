@@ -1,0 +1,3 @@
+Max Flow Value:	251
+Node Cut:
+45	39	61	

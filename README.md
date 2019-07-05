@@ -1,7 +1,7 @@
 #    <div style="text-align: center"> The Network Ecologist's DIY Handbook </div>
 ######  <div style="text-align: right"> - hal9k000 </div>
 ---
-## The Keynote Address:
+## The Keystone Address:
 
 The Ford-Fulkerson algorithm (1961) <sup>[1][2] </sup> is a powerful dual-optimisation tool in Graph-Theory that can be applied to determine the:
 * Maximum flow in a directed network
@@ -15,7 +15,7 @@ The code above basically generates a properly annotated graph (outputted in .gra
 
 ## The Starter Kit:
 
-To run the code above, you'll need *Python 3.X* installed on your workstation, together with the following Python packages:
+To run the code above, you'll need *Python 3.X* installed on your workstation, together with the following third-party Python packages:
 * NetworkX <sup>[4] </sup>
 * NumPy
 * Pandas
@@ -26,9 +26,9 @@ Additionally, applications such as [Cytoscape](https://cytoscape.org/ "Cytoscape
 
 ## The How-To Section:
 
-* First, after cloning this repository, store the trophic network data in the form of a *.CSV* spreadsheet in the folder *CSV Data*. The CSV spreadsheet must be configured such that the each row in it corresponds to the adjacency list of the indexed node *(see method `creator(self)` in I0.py for further details)*.
+* First, after cloning this repository, store the trophic network data in the form of a *.CSV* spreadsheet in the folder *"CSV Data"*. The CSV spreadsheet must be configured such that the each row in it corresponds to the adjacency list of the indexed node *(see method `creator(self)` in I0.py for further details)*.
 
-* Next, after having made your spreadsheet (say  *dilettante.csv*  for instance) your next task would be to open up *I0.py*, scroll over to `__init__(self)` and change:
+* Next, after having made your spreadsheet (say  *"dilettante.csv"*  for instance) your next task would be to open up *I0.py*, scroll over to `__init__(self)` and change:
 
       self.string = "fw_tuesday_lake"
 

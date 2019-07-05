@@ -1,0 +1,3 @@
+Max Flow Value:	1750
+Node Cut:
+73	24	53	84	43	71	
