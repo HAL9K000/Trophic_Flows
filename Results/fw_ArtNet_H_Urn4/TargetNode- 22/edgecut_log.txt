@@ -1,3 +1,0 @@
-Max Flow Value:	10000
-Edge Cut:
-[('s', '22')]

@@ -1,0 +1,5 @@
+Max Trophic level is:	2
+Intra-Connectance Scale Factor:
+1.500000
+Inter-Connectance Scale Factor:
+3.000000

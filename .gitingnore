@@ -1,0 +1,7 @@
+# A Git Ignore File for The Trophic Flows Network
+
+Results/
+
+Machine_Readable_Data/fw_*/
+
+*.png

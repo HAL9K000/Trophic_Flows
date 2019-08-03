@@ -1,3 +1,0 @@
-Max Flow Value:	2020
-Node Cut:
-14	12	83	

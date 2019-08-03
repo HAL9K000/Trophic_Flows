@@ -1,0 +1,3 @@
+A note on the listing below:
+In 0.6_3.1 the first number denotes the scaling factor of the inter-connectivity, i.e. 0.6*0.11
+And 3.1 represents the scaling factor applied to the default intra-connectivity, ie. 3.1*0.05 for (1,1)

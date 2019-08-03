@@ -1,3 +1,0 @@
-Max Flow Value:	1000
-Edge Cut:
-[('2', '28')]

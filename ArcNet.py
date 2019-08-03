@@ -34,10 +34,18 @@ class ArtificialNet(I_O):
                           (2, 1): 0.017857142857142856}'''
         # Using connectance data from Tuesday Lake
         
-        self.connectance={(0, 0): 0.0, (0, 1): 0.11, (1, 1): 0.05, 
+        '''self.connectance={(0, 0): 0.0, (0, 1): 0.11, (1, 1): 0.05, 
                           (1, 2): 0.11, (2, 2): 0.027777777777777776, 
                           (2, 3): 0.11, (2, 1): 0.006122448979591836, 
+                          (3, 3): 0.0, (3, 2): 0.0, (3, 1): 0.0}'''
+        #Stock
+        
+        self.connectance={(0, 0): 0.0, (0, 1): 0.394265, (1, 1): 0.05, 
+                          (1, 2): 0.2579, (2, 2): 0.027777777777777776, 
+                          (2, 3): 0.11, (2, 1): 0.006122448979591836, 
                           (3, 3): 0.0, (3, 2): 0.0, (3, 1): 0.0}
+        
+        # Here inter-connectivity values are an average of Ythan91, Sirrea Lakes, Tuesday Lake & Coachella data.
         
         self.string="fw_ArtNet_"+self.conf
         #Used for the saving the graphml file.
@@ -302,9 +310,9 @@ class ArtificialNet_Mult_NodeNum(ArtificialNet):
         os.chdir("Node Number")
         #Changing node distribution.
         
-        if(os.path.isdir("Set IV")==False):
-            os.mkdir("Set IV")
-        os.chdir("Set IV")
+        if(os.path.isdir("Set VII")==False):
+            os.mkdir("Set VII")
+        os.chdir("Set VII")
         
         i=0.25
         p=5

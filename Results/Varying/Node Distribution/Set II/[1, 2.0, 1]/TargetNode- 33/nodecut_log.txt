@@ -1,3 +1,0 @@
-Max Flow Value:	1430
-Node Cut:
-13	18	32	

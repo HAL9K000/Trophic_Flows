@@ -1,0 +1,5 @@
+Max Trophic level is:	2
+Node Distribution (Numbers):
+20.000000
+20.000000
+45.000000

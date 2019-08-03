@@ -26,6 +26,12 @@ Additionally, applications such as [Cytoscape](https://cytoscape.org/ "Cytoscape
 
 ## The How-To Section:
 
+---
+
+**Note the directory hierarchies and dependencies in the various scripts before altering them. If in doubt, revert to the hierarchy present above.**
+
+----
+
 * First, after cloning this repository, store the trophic network data in the form of a *.CSV* spreadsheet in the folder *"CSV Data"*. The CSV spreadsheet must be configured such that the each row in it corresponds to the adjacency list of the indexed node *(see method `creator(self)` in I0.py for further details)*.
 
 * Next, after having made your spreadsheet (say  *"dilettante.csv"*  for instance) your next task would be to open up *I0.py*, scroll over to `__init__(self)` and change:
@@ -48,9 +54,9 @@ Additionally, applications such as [Cytoscape](https://cytoscape.org/ "Cytoscape
 
 * To analyse the connectance in *dilettante* between trophic levels, run it through *ConnecFinder.py* having made the same changes to `self.string` in *ConnecFinder.py* as above. Make sure you run *I0.py* before this.
 
-* After having run *I0.py* and *ConnecFinder.py* (in that order) for *dilettante*, if you choose, you can make an artificial network based on the connectance data of *dilettante* by running *ArcNet.py*. By default, it will create an artificial network of 24 nodes, but you can modify this as you see fit by altering:
+* After having run *I0.py* and *ConnecFinder.py* (in that order) for *dilettante*, if you choose, you can make an artificial network based on the connectance data of *dilettante* by running *ArcNet.py*. By default, it will create an artificial network of 70 nodes, but you can modify this as you see fit by altering:
 
-      self.n = 24
+      self.n = 70
 
   under `__init__(self)` accordingly.
 

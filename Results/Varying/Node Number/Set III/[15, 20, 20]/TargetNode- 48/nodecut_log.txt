@@ -1,3 +1,0 @@
-Max Flow Value:	360
-Node Cut:
-34	15	

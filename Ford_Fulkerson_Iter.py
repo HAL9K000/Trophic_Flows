@@ -14,28 +14,64 @@ import pandas as pan
 import numpy as np
 from Ford_Fulkerson import FordFulkerson
 
-''' This program finds trophic stability results as a function of some varying networkk paraeter such as node ratio, 
-    connectance or total number of nodes'''
+''' This program finds trophic stability results as a function of some network parameters such as node ratio 
+     or total number of nodes'''
+     
+     
+''' To change the trophic level at which you are altering the node distribution/node numbers you will need to change the following:
+    
+    i) To change between Trophic Levels:
+    
+       Set all instances of the Set Number accordingly (using Ctrl+R)
+       
+       For Node Numbers:
+           Set  ii --> Trp Lvl 1 (Inter-Con : 0.11)
+           Set  iii --> Trp Lvl 0 (Inter-Con : 0.11)
+           Set  iv --> Trp Lvl 2 (Inter-Con : 0.11)
+           
+           Set  v --> Trp Lvl 0 (Inter-Con : 0.394, 0.2579, Intra-Con: 0.05, 0.027)
+           Set  vi --> Trp Lvl 1 (Inter-Con : 0.394, 0.2579, Intra-Con: 0.05, 0.027)
+           Set  vii --> Trp Lvl 2 (Inter-Con : 0.394, 0.2579, Intra-Con: 0.05, 0.027)
+           
+           Update self.connectance for dfferent normalisation values accordingly.
+           
+       
+       For Node Distributions:
+           Set  I --> Trp Lvl 0
+           Set  II --> Trp Lvl 1
+           Set  III --> Trp Lvl 2
+    
+       Also set assignment of tr varaible (tr= __ ) to that of trophic level being changed, in self.trend_setter1() and
+       self.trend_plot()
+       
+'''
 
 class FordFulkerson_Iterable(FordFulkerson):
     
     def __init__(self):
         os.chdir("../../")
         #Due to  __init__(self) in base class
-        os.chdir(r"Machine_Readable_Data\Mult\Node Distribution")
+        os.chdir(r"Machine_Readable_Data\Mult\Node Number")
         self.config=[name for name in os.listdir("Set II") if os.path.isdir(os.path.join("Set II", name))]
-        #Gets the names of all sub-directories in "Machine_Readable_Data\Mult\Node Distribution"
-        #Change Set number for different distributions, Also change itin inner_temple for read operations.
+        #Gets the names of all sub-directories in "Machine_Readable_Data\Mult\Node Number"
+        #Change Set number for different distributions, Also change it in inner_temple for read operations.
         os.chdir("../../../")
         
         self.min_edge_flowval=self.min_node_flowval= 100000
         self.max_edge_flowval=self.max_node_flowval= 0
         #Refer to Ford_Fulkerson.py (superclass) for details.
         
+        
+        self.connectance={(0, 0): 0.0, (0, 1): 0.11, (1, 1): 0.05, 
+                          (1, 2): 0.11, (2, 2): 0.027777777777777776, 
+                          (2, 3): 0.11, (2, 1): 0.006122448979591836, 
+                          (3, 3): 0.0, (3, 2): 0.0, (3, 1): 0.0}
+        #Used for normalisation
+        
         self.avg_edge_cut=[]
         self.avg_edge_flow_val=[]
         '''Stores the avg # edge cut and avg flow values for each trophic level in a matrix, with different rows indicating different node
-           node distributions and different columns representing different trophic levels'''
+           Node Numbers and different columns representing different trophic levels'''
         
         self.avg_node_cut=[]
         self.avg_node_flow_val=[]
@@ -44,22 +80,25 @@ class FordFulkerson_Iterable(FordFulkerson):
         #A dict that will store interesting data on edge cuts
         self.storage_vex={}
         #A dict that will store interesting data on vertex cuts
+        
+        self.masterbinder0={}
+        # A dict that stores master-binder data for multiple itrations.
     
     def inner_temple(self):
         #The doorway to the sanctum
         
-        self.config_list=[] #Stores all the different node distributions iterated over (each distribution a row)
+        self.config_list=[] #Stores all the different Node Numbers iterated over (each distribution a row)
         
         for x in self.config:
-            self.DirGraph=nex.read_graphml(r"Machine_Readable_Data\Mult\Node Distribution\Set II\%s\%s_Annotated.graphml" %(x, x))            
-            f=open(r"Machine_Readable_Data\Mult\Node Distribution\Set II\%s\log_unabridged.txt" %(x))
+            self.DirGraph=nex.read_graphml(r"Machine_Readable_Data\Mult\Node Number\Set II\%s\%s_Annotated.graphml" %(x, x))            
+            f=open(r"Machine_Readable_Data\Mult\Node Number\Set II\%s\log_unabridged.txt" %(x))
             self.string=x
             #All names to be based on this.
-            #Storing the node distribution in self.config_list
+            #Storing the Node Number in self.config_list
             flag=0  
             a=[]
             for l in f.readlines():
-                if( l== "Node Distribution:\n"):
+                if( l== "Node Distribution (Numbers):\n"):
                     flag=1
                     continue
                 if(flag==1):
@@ -71,9 +110,9 @@ class FordFulkerson_Iterable(FordFulkerson):
                 os.mkdir("Results\Varying")
             os.chdir("Results\Varying")
             
-            if(os.path.isdir("Node Distribution")==False):
-                os.mkdir("Node Distribution")
-            os.chdir("Node Distribution")
+            if(os.path.isdir("Node Number")==False):
+                os.mkdir("Node Number")
+            os.chdir("Node Number")
             
             if(os.path.isdir("Set II")==False):
                 os.mkdir("Set II")
@@ -133,10 +172,50 @@ class FordFulkerson_Iterable(FordFulkerson):
         os.chdir("Trends")
         #Changing the directory
         
-        self.trend_setter()
+        self.trend_setter0() #Old way
+        self.trend_setter1() #New  way
         os.chdir("../")
         
-    def trend_setter(self):     #Collates information
+    def trend_setter1(self): #Collates info in a better way.
+        
+        tr=1 #The trophic level whose node numbers are being changed.
+        
+        if "Node Num Level 0" not in self.masterbinder0:
+            self.masterbinder0["Node Num Level 0"]=[]
+            self.masterbinder0["Node Num Level 1"]=[]
+            self.masterbinder0["Node Num Level 2"]=[]
+            self.masterbinder0['Vertex ID']=[]
+            self.masterbinder0['Trophic Level']=[]
+            self.masterbinder0['# of Edge Cuts']=[]
+            self.masterbinder0['Capacity of Edge Cuts']=[]
+            self.masterbinder0['# of Vertex Cuts']=[]
+            self.masterbinder0['Capacity of Vertex Cuts']=[]
+            #Creating these entries in master-binder0 for first time
+            
+            #Extending certain-datapoints
+            
+        self.masterbinder0['Vertex ID'].extend(self.masterbinder['Vertex ID'])
+        self.masterbinder0['Trophic Level'].extend(self.masterbinder['Trophic Level'])
+        self.masterbinder0['# of Edge Cuts'].extend(self.masterbinder['# of Edge Cuts'])
+        self.masterbinder0['# of Vertex Cuts'].extend(self.masterbinder['# of Vertex Cuts'])
+        self.masterbinder0['Capacity of Edge Cuts'].extend(self.masterbinder['Capacity of Edge Cuts'])
+        self.masterbinder0['Capacity of Vertex Cuts'].extend(self.masterbinder['Capacity of Vertex Cuts'])
+            
+        i=len(self.config_list)-1 #Index of most recently ( and therefore current) node parameters being simulated.
+        print("Benchoo:\t"+str(self.config_list[i][2]))
+        for x in range(0,len(self.masterbinder["Vertex ID"])):
+            # Assuming 20 x 20 structure
+            self.masterbinder0["Node Num Level 2"].append(20)
+            self.masterbinder0["Node Num Level 0"].append(20)
+                
+            self.masterbinder0["Node Num Level %d" %(tr)].append(self.config_list[i][tr])
+        
+    def trend_setter0(self):     #Collates information
+        
+        
+        
+        
+        '''Old code'''
         
         trophiclvl=nex.get_node_attributes(self.DirGraph, 'trophic')
         
@@ -238,7 +317,7 @@ class FordFulkerson_Iterable(FordFulkerson):
         
         self.avg_edge_cut.append(edge_row)
         self.avg_edge_flow_val.append(edgeflow_row)
-        '''Updating the node distribution data matrices (refer to __init__() for more details'''
+        '''Updating the Node Number data matrices (refer to __init__() for more details'''
         
         self.avg_node_cut.append(node_row)
         self.avg_node_flow_val.append(nodeflow_row)
@@ -260,7 +339,7 @@ class FordFulkerson_Iterable(FordFulkerson):
         config_list=np.array(self.config_list)
         #Rewriting variables as np arrays for easier iterations.
         
-        os.chdir("Results/Varying/Node Distribution/Set II/Trends")
+        os.chdir("Results/Varying/Node Number/Set II/Trends")
         
         x ,y = config_list.shape #Gives dimensions of the arrays.
         
@@ -271,15 +350,57 @@ class FordFulkerson_Iterable(FordFulkerson):
         print("Config List:")
         print(config_list)
         
+        
+        
+        tr=1 #The trophic level whose numbers are being altered
+        
+        for p in range(0, len(avg_edge_cut[:,1])):
+            
+            
+            h=config_list[p,tr]
+            
+            avg_edge_cut[p,0]=avg_edge_cut[p,0]/(self.normalise(0,tr, h))
+            avg_edge_cut[p,1]=avg_edge_cut[p,1]/(self.normalise(1,tr, h))
+            avg_edge_cut[p,2]=avg_edge_cut[p,2]/(self.normalise(2,tr, h))
+            
+            avg_edge_flow_val[p,0]=avg_edge_flow_val[p,0]/(self.normalise(0,tr, h))
+            avg_edge_flow_val[p,1]=avg_edge_flow_val[p,1]/(self.normalise(1,tr, h))
+            avg_edge_flow_val[p,2]=avg_edge_flow_val[p,2]/(self.normalise(2,tr, h))
+            
+            avg_node_cut[p,0]=avg_node_cut[p,0]/(self.normalise(0,tr, h))
+            avg_node_cut[p,1]=avg_node_cut[p,1]/(self.normalise(1,tr, h))
+            avg_node_cut[p,2]=avg_node_cut[p,2]/(self.normalise(2,tr, h))
+            
+            avg_node_flow_val[p,0]=avg_node_flow_val[p,0]/(self.normalise(0,tr, h))
+            avg_node_flow_val[p,1]=avg_node_flow_val[p,1]/(self.normalise(1,tr, h))
+            avg_node_flow_val[p,2]=avg_node_flow_val[p,2]/(self.normalise(2,tr, h))
+        
+        
+            
+            
+        
+        
+            
+           
+            
+        print("Average Edge Cut:")
+        print(avg_edge_cut)
+        print("Average Vertex Cut:")
+        print(avg_node_cut)
+        print("Config List:")
+        print(config_list)
+            
         for x in range(0, y):
             #Iterating over the different trophic levels.
             
-            plt.plot(config_list[:,1], avg_edge_cut[:,x], marker='o', markerfacecolor='none', 
+            
+            
+            plt.plot(config_list[:,tr], avg_edge_cut[:,x], marker='o', markerfacecolor='none', 
                      label="Avg number of # Edge cuts to disconnect Tr %d" %(x))
-            plt.plot(config_list[:,1], avg_node_cut[:,x],  marker='o', markerfacecolor='none', 
+            plt.plot(config_list[:,tr], avg_node_cut[:,x],  marker='o', markerfacecolor='none', 
                      label="Avg number of # Node cuts to disconnect Tr %d" %(x))
-        plt.xlabel("Node Distribution of Trophic Level 1 (Primary Consumers)")
-        plt.ylabel("Number of cuts")
+        plt.xlabel("Node Number of Trophic Level %d" %(tr))
+        
         plt.legend()
         plt.savefig("One.png", dpi=300)
         plt.show()
@@ -289,20 +410,116 @@ class FordFulkerson_Iterable(FordFulkerson):
         for x in range(0, y):
             #Iterating over the different trophic levels.
             
-            plt.plot(config_list[:,1], avg_edge_flow_val[:,x],  marker='o', markerfacecolor='none', 
+            plt.plot(config_list[:,tr], avg_edge_flow_val[:,x],  marker='o', markerfacecolor='none', 
                      label="Avg flow value of Edge cuts to disconnect Tr %d" %(x))
-            plt.plot(config_list[:,1], avg_node_flow_val[:,x], marker='o', markerfacecolor='none',
+            plt.plot(config_list[:,tr], avg_node_flow_val[:,x], marker='o', markerfacecolor='none',
                      label="Avg Flow val of Node cuts to disconnect Tr %d" %(x))
-        plt.xlabel("Node Distribution of Trophic Level 1 (Primary Consumers)")
-        plt.ylabel("Number of cuts")
+        plt.xlabel("Node Number of Trophic Level %d" %(tr))
+        
         plt.legend()
         plt.savefig("Two.png", dpi=300)
         plt.show()
         plt.clf()
         plt.close()
             
+        
+        
+        
+        
+        
+        ''' Seaborn Plots'''
+        
+        '''But first, Normalisation'''
+        
+        for i in range(0, len(self.masterbinder0['Trophic Level'])):
+            
+            h=self.masterbinder0["Node Num Level %d" %(tr)][i]     #The changing number of nodes in ith level.
+            t=self.masterbinder0['Trophic Level'][i]          #Current trophic level of sink.
+            self.masterbinder0['# of Edge Cuts'][i]=self.masterbinder0['# of Edge Cuts'][i]/(self.normalise(t,tr,h))
+            self.masterbinder0['Capacity of Edge Cuts'][i]=self.masterbinder0['Capacity of Edge Cuts'][i]/(self.normalise(t,tr,h))
+            self.masterbinder0['# of Vertex Cuts'][i]=self.masterbinder0['# of Vertex Cuts'][i]/(self.normalise(t,tr,h))
+            self.masterbinder0['Capacity of Vertex Cuts'][i]=self.masterbinder0['Capacity of Vertex Cuts'][i]/(self.normalise(t,tr,h))
+            
+        ''' Now to save as a dataframe'''
+        
+        jailkeeper=pan.DataFrame(self.masterbinder0)
+        print(jailkeeper)
+        print("Height of data frame is:\t%d" %(len(jailkeeper.index)))
+        
+        g= sea.lineplot(x="Node Num Level %d" %(tr), y='# of Edge Cuts',hue="Trophic Level", estimator='mean', ci='sd' ,data=jailkeeper)
+        
+        plt.savefig("# Edges_Lineplot.png", dpi=300)
+        plt.show()
+        plt.close()
+        
+        g= sea.lineplot(x="Node Num Level %d" %(tr), y='# of Vertex Cuts',hue="Trophic Level", estimator='mean', ci='sd' ,data=jailkeeper)
+        
+        plt.savefig("# Ver_Lineplot.png", dpi=300)
+        plt.show()
+        plt.close()
+        
+        g= sea.lineplot(x="Node Num Level %d" %(tr), y='Capacity of Edge Cuts',hue="Trophic Level", estimator='mean', ci='sd' ,data=jailkeeper)
+        
+        plt.savefig("Min Cap Edges_Lineplot.png", dpi=300)
+        plt.show()
+        plt.close()
+        
+        g= sea.lineplot(x="Node Num Level %d" %(tr), y='Capacity of Vertex Cuts',hue="Trophic Level", estimator='mean', ci='sd' ,data=jailkeeper)
+        
+        plt.savefig("Min Cap Vertices_Lineplot.png", dpi=300)
+        plt.show()
+        plt.close()
+        
+            
         os.chdir("../../../../")
         print("Current working Directory:\t %s" %(os.getcwd()))
+        
+        
+    def normalise(self, t,p, config):
+        
+        # t represents the trophic level being normalised, p the level whose node number is being altered.
+        
+        
+        
+        maxi=0.0 
+        #Normalisation constant, stores the maximum number of nodes possible in all the levels of the graph upto the t th level. 
+        
+        if(p==0):
+            maxi=config
+            
+        else:
+            maxi=20.0
+            
+        
+        for i in range(0,t):
+            #In each iteration maps the connections between the ith and i+1 th level as well as intra-connections in i+1 th level
+            if(i==p-1):
+                #Mapping the interconnections in the level between p-1 & p
+                maxi= maxi+ self.connectance[(p-1,p)]*20*config
+                #Intra-connections next
+                if(i==0 or i==1):
+                    #If pth level is 1st level or 2nd level respectively.
+                    maxi= maxi+self.connectance[(i+1,i+1)]*config*config
+                
+            elif(i==p):
+                #Mapping the interconnections in the level between p & p+1
+                maxi=maxi + self.connectance[(p,p+1)]*config*20
+                #Intra connections next.
+                
+                maxi= maxi+self.connectance[(i+1,i+1)]*20*20
+                
+            else:
+                maxi= maxi+ self.connectance[(i,i+1)]*20*20
+                if(i==0):
+                    #If 0th level and pth level is 2 or higher
+                    maxi= maxi+ self.connectance[(i+1,i+1)]*20*20
+                if(i==1):
+                    maxi= maxi+ self.connectance[(i+1,i+1)]*20*20
+                    
+        #print("Trophic Level Being Normalised:%d"+)
+                
+        return maxi
+            
         
     
     
