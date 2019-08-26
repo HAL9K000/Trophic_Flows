@@ -359,21 +359,21 @@ class FordFulkerson_Iterable(FordFulkerson):
             
             h=config_list[p,tr]
             
-            avg_edge_cut[p,0]=avg_edge_cut[p,0]/(self.normalise(0,tr, h))
-            avg_edge_cut[p,1]=avg_edge_cut[p,1]/(self.normalise(1,tr, h))
-            avg_edge_cut[p,2]=avg_edge_cut[p,2]/(self.normalise(2,tr, h))
+            avg_edge_cut[p,0]=avg_edge_cut[p,0]/(self.normalise0(0,tr, h))
+            avg_edge_cut[p,1]=avg_edge_cut[p,1]/(self.normalise0(1,tr, h))
+            avg_edge_cut[p,2]=avg_edge_cut[p,2]/(self.normalise0(2,tr, h))
             
-            avg_edge_flow_val[p,0]=avg_edge_flow_val[p,0]/(self.normalise(0,tr, h))
-            avg_edge_flow_val[p,1]=avg_edge_flow_val[p,1]/(self.normalise(1,tr, h))
-            avg_edge_flow_val[p,2]=avg_edge_flow_val[p,2]/(self.normalise(2,tr, h))
+            avg_edge_flow_val[p,0]=avg_edge_flow_val[p,0]/(self.normalise0(0,tr, h))
+            avg_edge_flow_val[p,1]=avg_edge_flow_val[p,1]/(self.normalise0(1,tr, h))
+            avg_edge_flow_val[p,2]=avg_edge_flow_val[p,2]/(self.normalise0(2,tr, h))
             
-            avg_node_cut[p,0]=avg_node_cut[p,0]/(self.normalise(0,tr, h))
-            avg_node_cut[p,1]=avg_node_cut[p,1]/(self.normalise(1,tr, h))
-            avg_node_cut[p,2]=avg_node_cut[p,2]/(self.normalise(2,tr, h))
+            avg_node_cut[p,0]=avg_node_cut[p,0]/(self.normalise0(0,tr, h))
+            avg_node_cut[p,1]=avg_node_cut[p,1]/(self.normalise0(1,tr, h))
+            avg_node_cut[p,2]=avg_node_cut[p,2]/(self.normalise0(2,tr, h))
             
-            avg_node_flow_val[p,0]=avg_node_flow_val[p,0]/(self.normalise(0,tr, h))
-            avg_node_flow_val[p,1]=avg_node_flow_val[p,1]/(self.normalise(1,tr, h))
-            avg_node_flow_val[p,2]=avg_node_flow_val[p,2]/(self.normalise(2,tr, h))
+            avg_node_flow_val[p,0]=avg_node_flow_val[p,0]/(self.normalise0(0,tr, h))
+            avg_node_flow_val[p,1]=avg_node_flow_val[p,1]/(self.normalise0(1,tr, h))
+            avg_node_flow_val[p,2]=avg_node_flow_val[p,2]/(self.normalise0(2,tr, h))
         
         
             
@@ -479,10 +479,12 @@ class FordFulkerson_Iterable(FordFulkerson):
         
         # t represents the trophic level being normalised, p the level whose node number is being altered.
         
+        #Returns the number of edges present in the graph.
+        
         
         
         maxi=0.0 
-        #Normalisation constant, stores the maximum number of nodes possible in all the levels of the graph upto the t th level. 
+        #Normalisation constant, stores the TOTAL number of nodes PRESENT in all the levels of the graph upto the t th level. 
         
         if(p==0):
             maxi=config
@@ -519,7 +521,49 @@ class FordFulkerson_Iterable(FordFulkerson):
         #print("Trophic Level Being Normalised:%d"+)
                 
         return maxi
+    
+    
+    def normalise0(self, t,p, config):
+        
+        # t represents the trophic level being normalised, p the level whose node number is being altered.
+        
+        #Returns the MAXIMUM number of edges POSSIBLE in the graph.
+        
+        maxi=0.0 
+        #Normalisation constant, stores the MAXIMUM number of nodes POSSIBLE in all the levels of the graph upto the t th level. 
+        
+        if(p==0):
+            maxi=config
             
+        else:
+            maxi=20.0
+            
+        for i in range(0,t):
+            #In each iteration maps the connections between the ith and i+1 th level as well as intra-connections in i+1 th level
+            if(i==p-1):
+                #Mapping the interconnections in the level between p-1 & p
+                maxi= maxi+ 20*config
+                #Intra-connections next
+                if(i==0 or i==1):
+                    #If pth level is 1st level or 2nd level respectively.
+                    maxi= maxi+config*config
+                
+            elif(i==p):
+                #Mapping the interconnections in the level between p & p+1
+                maxi=maxi + config*20
+                #Intra connections next.
+                
+                maxi= maxi+20*20
+                
+            else:
+                maxi= maxi+ 20*20
+                #Intra-connections next.
+                
+                maxi= maxi+ 20*20
+                
+        return maxi
+            
+        
         
     
     

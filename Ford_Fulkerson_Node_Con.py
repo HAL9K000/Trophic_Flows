@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-Created on Wed Jul 10 12:33:16 2019
+Created on Thu Aug  8 17:40:55 2019
 
 @author: Koustav
 """
@@ -16,18 +16,17 @@ import numpy as np
 import pickle
 from Ford_Fulkerson import FordFulkerson
 
-''' This program finds trophic stability results as a function of a varying network parameters called 
-    connectance'''
-    
-'''WARNING! ASSUMES that the artificial net has 20-20-20-... symmetric structure.'''
 
-class FordFulkerson_Connectance(FordFulkerson):
+class FordFulkerson_NodeConnectance(FordFulkerson):
     
     def __init__(self):
+        
         os.chdir("../../")
         #Due to  __init__(self) in base class
-        os.chdir(r"Machine_Readable_Data\Mult\Connectance")
-        self.config=[name for name in os.listdir("Set I") if os.path.isdir(os.path.join("Set I", name))]
+        
+        self.string="node_connectance"
+        os.chdir(r"Machine_Readable_Data\Mult\Node-Connectance")
+        self.config=[name for name in os.listdir("Set VI") if os.path.isdir(os.path.join("Set VI", name))]
         #Gets the names of all sub-directories in "Machine_Readable_Data\Mult\Connectance"
         #Change Set number for different connections, Also change it in inner_temple for read operations.
         os.chdir("../../../")
@@ -35,6 +34,14 @@ class FordFulkerson_Connectance(FordFulkerson):
         self.min_edge_flowval=self.min_node_flowval= 100000
         self.max_edge_flowval=self.max_node_flowval= 0
         #Refer to Ford_Fulkerson.py (superclass) for details.
+        
+        self.storage_edge={}
+        #A dict that will store interesting data on edge cuts
+        self.storage_vex={}
+        #A dict that will store interesting data on vertex cuts
+        
+        self.masterbinder0={}
+        #Stores a continually updated version of the masterbinder data for 3D plotting (see trendsetter)
         
         self.avg_edge_cut=[]
         self.avg_edge_flow_val=[]
@@ -49,61 +56,64 @@ class FordFulkerson_Connectance(FordFulkerson):
         '''Stores the standard dev (sd) of # edge cut and of flow values for each trophic level in a matrix, with different rows indicating 
            different connectances and different columns representing different trophic levels'''
         
+        
+        
+        self.intraconnectance={(0, 0): 0.0, (1, 1): 0.05, 
+                               (2, 2): 0.027777777777777776, (2, 3): 0.11}
+        #Used for normalisation.
+        
         self.sd_node_cut=[]
         self.sd_node_flow_val=[]
-        
-        self.storage_edge={}
-        #A dict that will store interesting data on edge cuts
-        self.storage_vex={}
-        #A dict that will store interesting data on vertex cuts
-        
-        self.string="connectance"
-        
-        self.r=0    #Used as a flag to denote first instantiation of self.trend_setter(), callable via self.sanctum()
-        
-        self.edgecutnum=[]; self.vercutnum=[]
+
         
     def inner_temple(self):
-        #The door way to the sanctum.
         
-        self.intracon=[]
         self.intercon=[]
-        #Stores all the different intra-trophic and inter-trophic scaling factors respectively.
+        #Stores the inter-connectance data.
         
-        
-        self.intracol=[]
-        self.intercol=[]
-        #Stores the connectace data of normalised edge & vertex cuts. Check self.normalise()
-        
+        self.nodenum=[]
+        #Stores the number of nodes in altered trophic level.
         
         for x in self.config:
             #Iterating over the different sub-directories.
             
-            self.DirGraph=nex.read_graphml(r"Machine_Readable_Data\Mult\Connectance\Set I\%s\Connectance_Annotated.graphml" %(x))
+            self.DirGraph=nex.read_graphml(r"Machine_Readable_Data\Mult\Node-Connectance\Set VI\%s\Connectance_NodeNum_Annotated.graphml" %(x))
             
             #Ascertaining the scaling factors
             p= x.find("_")
+            y=float(x[p+1:])
+            #Interconnectance values
+            self.intercon.append(y)
+            #Storing the interconnectance data of the current config here.
             
-            self.intercon.append(float(x[:p]))
-            self.intracon.append(float(x[p+1:]))
+            f=open("Machine_Readable_Data/Mult/Node-Connectance/Set VI/%s/log_unabridged.txt" %(x), 'r')
             
+            flag=0 #Used to determine altered level
+            
+            for l in f.readlines():
+                if( l== "Number Of Nodes in Altered Trophic Level:\n"):
+                    flag=1
+                    continue
+                if(flag==1):
+                    self.nodenum.append(float(l.rstrip('\n')))
+                    flag=0 #Changing back to the status quo.
+                    
             #Changing to appropriate directory in results
             if(os.path.isdir("Results/Varying")==False):
                 os.mkdir("Results/Varying")
             os.chdir("Results/Varying")
             
-            if(os.path.isdir("Connectance")==False):
-                os.mkdir("Connectance")
-            os.chdir("Connectance")
+            if(os.path.isdir("Node-Connectance")==False):
+                os.mkdir("Node-Connectance")
+            os.chdir("Node-Connectance")
             
-            if(os.path.isdir("Set I")==False):
-                os.mkdir("Set I")
-            os.chdir("Set I")
+            if(os.path.isdir("Set VI")==False):
+                os.mkdir("Set VI")
+            os.chdir("Set VI")
             
             if(os.path.isdir(x)==False):
                 os.mkdir(x)
             os.chdir(x)
-            
             
             self.sanctum()
             
@@ -114,37 +124,41 @@ class FordFulkerson_Connectance(FordFulkerson):
             #Now in root directory, works as control has shifted to Set I directtory after execution of sanctum()
             print("Current working Directory:\t %s" %(os.getcwd()))
             
-            
-        self.CSV_output()
-        #Outputs trophic level data in readable CSV format. 
+        
+        #self.CSV_output()
         
         self.trend_plot()
-        #Plots the final trends
-        
+        #Plotting a swift exit.
             
+    
+    
     def sanctum(self):
-         
+        
         trophiclvl=nex.get_node_attributes(self.DirGraph, 'trophic')
-        i=0 #Used to provide a count
-        for n in self.DirGraph.nodes():     
+        
+        for n in self.DirGraph.nodes():
+            #Iterating through all the nodes.
+            
             if(n != 's'):
-                #Not sink.
+                #Not sink
+                
+                '''The following function comes from FordFulkerson.py'''             
                 self.min_edge_cut(n)
+                
                 if (trophiclvl[n] !=0):
                     #If producer, only way for it to go extinct is to remove the source or the producer itself.
                     self.node_trans(n)
                     self.min_node_cut(n)
-                i+=1
-        
+                
         self.statistics()
         self.statistics_adv()
-        print("Total number of iterations run:\t%d" %(i))
+            
+    def statistics_adv(self):
         
-    def statistics_adv(self):       #Finds and presents more detailed insights into the generated data.
         print("MC Zulu")
         
         os.chdir("../../")
-        #Now in Set I Directory.
+        #Now in Set VI Directory.
         
         if(os.path.isdir("Trends")==False):
             os.mkdir("Trends")
@@ -154,60 +168,67 @@ class FordFulkerson_Connectance(FordFulkerson):
         self.trend_setter()
         os.chdir("../")
         
-    def trend_setter(self):     #Collates information
+    def trend_setter(self):
+        
+        tr=1
+        #Trophic level being altered.
+        
+        if "Vertex ID" not in self.masterbinder0:
+            self.masterbinder0['Vertex ID']=[]
+            self.masterbinder0['Trophic Level']=[]
+            self.masterbinder0['# of Edge Cuts']=[]
+            self.masterbinder0['Capacity of Edge Cuts']=[]
+            self.masterbinder0['# of Vertex Cuts']=[]
+            self.masterbinder0['Capacity of Vertex Cuts']=[]
+            self.masterbinder0["Node Number In Altered Level %d" %(tr)]=[]
+            self.masterbinder0["Interconnectance"]=[]
+            #Creating these entries in master-binder0 for first time
+            
+        self.masterbinder0['Vertex ID'].append(self.masterbinder['Vertex ID'])
+        self.masterbinder0['Trophic Level'].append(self.masterbinder['Trophic Level'])
+        self.masterbinder0['# of Edge Cuts'].append(self.masterbinder['# of Edge Cuts'])
+        self.masterbinder0['Capacity of Edge Cuts'].append(self.masterbinder['Capacity of Edge Cuts'])
+        self.masterbinder0['# of Vertex Cuts'].append(self.masterbinder['# of Vertex Cuts'])
+        self.masterbinder0['Capacity of Vertex Cuts'].append(self.masterbinder['Capacity of Vertex Cuts'])
+        
+        for x in range(0, len(self.masterbinder['Vertex ID'])):
+            self.masterbinder0["Node Number In Altered Level %d" %(tr)].append(self.nodenum[-1])
+            # self.nodenum[-1] stores the value of the number of nodes in the altered level of the current graph.
+            self.masterbinder0["Interconnectance"].append(self.intercon[-1])
+        
+        #Extened catalouging accomplished.
         
         
         top=max(self.masterbinder['Trophic Level'])
-        #Find max trophic level.
         
-        if(self.r==0):
-            #Used to find first instantiation of trend_setter()
-            
-            self.edgecutnum=[[] for t in range(0,top+1)]
-            self.vercutnum=[[] for t in range(0,top+1)]
-            self.cap_edgeval=[[] for t in range(0,top+1)]
-            self.cap_verval=[[] for t in range(0,top+1)]
-            
-            #Creating the variables which will store the normalised data
-            
-            self.r=1 #Changing the flag
-            
-        
-        edgecutnum=[]   
-        '''Arrays storing information on # edge cuts ( & # node cuts) of a particular vertex in a particular config belonging
-            to a particular trophic level'''
-        vercutnum=[]
-        
-        cap_edgeval=[]
-        cap_verval=[]
-        ''' Arrays storing info on the capacities od edge & node cuts respectively, of a particular vertex in a particular
-            config belonging to a particular trophic level'''
-            
         edgecut_mean=[]; vercut_mean=[]; cap_edgeval_mean=[]; cap_verval_mean=[]
-        edgecut_sd=[]; vercut_sd=[]; cap_edgeval_sd=[]; cap_verval_sd=[];
+        edgecut_sd=[]; vercut_sd=[]; cap_edgeval_sd=[]; cap_verval_sd=[]
         
+        '''Stores the means and standard deviations of the # Edge Cut, # Ver Cut, Capacity of Edge Cuts, 
+        Capacity of Vertex Cuts data of self.masterbinder for a particular trophic level of a particular graph'''
         
         for t in range(0,top+1):
-            #Iterating through the trophic levels
             
             edgecutnum=[]; vercutnum=[]; cap_edgeval=[]; cap_verval=[]
             #Resetting to default values before starting off on a new trophic level
             
             for x in range(0, len(self.masterbinder['Vertex ID'])):
-                #Iterating through all the nodes
-                if( self.masterbinder['Trophic Level'][x]==t):
-                                                        
+             
+                if (self.masterbinder['Trophic Level'][x]==t):
+                    
                     edgecutnum.append(self.masterbinder['# of Edge Cuts'][x])
                     vercutnum.append(self.masterbinder['# of Vertex Cuts'][x])
                     cap_edgeval.append(self.masterbinder['Capacity of Edge Cuts'][x])
                     cap_verval.append(self.masterbinder['Capacity of Vertex Cuts'][x])
             
+            norm= self.normalise(t, tr)     #Stores the normalisation constant.
             
-            self.normalise( t, edgecutnum, vercutnum, cap_edgeval, cap_verval)       
-            '''Normalises edgecutnum, vercutnum, cap_edgeval, cap_verval'''
+            edgecutnum[:]= [y/norm for y in edgecutnum]
+            vercutnum[:]= [y/norm for y in vercutnum]
+            cap_edgeval[:]= [y/norm for y in cap_edgeval]
+            cap_verval[:]= [y/norm for y in cap_verval]
             
-            '''WARNING! ASSUMES that the artificial net has 20-20-20-... symmetric structure.
-               Normalisation uses the total number of possible connections in a preceding level as the normalisation factor'''
+            '''Normalises all the generated data. Note that intra-connection values are fixed.'''
             
             #Determination of mean and SD of four matrices determined above.
             
@@ -229,10 +250,6 @@ class FordFulkerson_Connectance(FordFulkerson):
             print("Length of Edge Cut Number: "+str(len(edgecutnum)))
             print("Edge Cut Number SD: "+str(np.std(edgecutnum, dtype=np.float64, ddof=1)))
             
-            
-            
-            
-        
         self.avg_edge_cut.append(edgecut_mean)  
         self.avg_edge_flow_val.append(cap_edgeval_mean)
         
@@ -249,84 +266,64 @@ class FordFulkerson_Connectance(FordFulkerson):
         self.sd_node_flow_val.append(cap_verval_sd)
         
         
-    def normalise(self, t, edgecutnum, vercutnum, cap_edgeval, cap_verval):   
+    def normalise(self, t, tr):
         
-        '''WARNING! ASSUMES that the artificial net has 20-20-20-... symmetric structure.'''
-        
-        i=len(self.intracon)-1 # Last ( & current ) index of latent self.intracon/self.intercon
-        
-        #Determining normalisztion factor (maxi) which is maximim number of edges possible at or below the level.
-        
+        '''Normalises the data sent to it, t is the trophic level being normalised, 
+            tr is the trophic level being altered'''
+            
         maxi=20.0
         
-        for p in range(0,t):
-            #maxi= maxi+ self.intercon[i]*20*20*0.11
-            maxi= maxi + 20*20
+        '''maxi stores the normalisation factor, which is the maximum number of edges possible b/w nodes present
+        in the t th tropic level or lower (both intra-connections and inter-connections)'''
+        
+        if(tr== 0):
+           maxi=self.nodenum[-1]
+           #self.nodenum[-1] stores the number of nodes in the altered level.
+           
+        for i in range(0,t):
+            '''Iterating over the trophic levels finding the inter-connections between the ith and i+1 th trophic levels
+            as well the intra-connections in the i+1 th trophic level'''
             
-            if(p==0):
-                #t=1 exists, i.e. there is at least trophic level one in the system.
-                #maxi= maxi+ self.intracon[i]*20*20*0.05
-                maxi= maxi + 20*20
-            elif(p==1):
-                #t=2 exists. Accounting for all possible (2,2) connections.
-                #maxi= maxi+self.intracon[i]*20*20*0.027
-                maxi= maxi + 20*20
+            if (i== tr-1):
+                # The i+1 th level has altered number of nodes.
+                # Mapping inter-connections b/w the tr-1 and tr th level
+                maxi= maxi + 20*self.nodenum[-1]*self.intercon[-1]*0.11
+                #maxi= maxi+ 20*self.nodenum[-1]
                 
-        edgecutnum[:]=[x/maxi for x in edgecutnum]
-        vercutnum[:]=[x/maxi for x in vercutnum]
-        cap_edgeval[:]=[x/maxi for x in cap_edgeval]
-        cap_verval[:]=[x/maxi for x in cap_verval]
-        
-        #Normalising edgecutnum, vercutnum,cap_edgeval, cap_verval
+                #Next the intra-connections in the tr th trophic level.
+                maxi= maxi + self.nodenum[-1]*self.nodenum[-1]*self.intraconnectance[(tr,tr)]
+                #maxi= maxi + self.nodenum[-1]*self.nodenum[-1]
                 
-        
-        #Arrays whose different rows store all the normalised information about trophic levels 0,1,2
-        
-        self.edgecutnum[t].extend(edgecutnum)
-        self.vercutnum[t].extend(vercutnum)
-        self.cap_edgeval[t].extend(cap_edgeval)
-        self.cap_verval[t].extend(cap_verval)
                 
-        if(t==0):
-            #We create one inter=col and intra-col that we use for all the different trophic levels.
-            for p in range(0,len(edgecutnum)):
-                #Adding the same number of entries as aove to the columns storing intra-connectance and inter-connectance
-                self.intracol.append(self.intracon[i])
-                self.intercol.append(self.intercon[i])
-            
+            elif (i== tr):
+                # Mapping inter-connections b/w the tr and tr +1 th level
+                maxi= maxi+ self.nodenum[-1]*20*self.intercon[-1]*0.11
+                
+                #maxi= maxi+ self.nodenum[-1]*20
+                
+                # Mapping intra-connections in the tr+1 th level
+                
+                maxi= maxi+ 20*20*self.intraconnectance[(tr+1,tr+1)]
+                
+                #maxi= maxi +20*20
+                
+            else:
+                #Mapping inter-connections
+                maxi= maxi + 20*20*self.intercon[-1]*0.11
+                
+                #maxi= maxi + 20*20
+                
+                #Mapping intra-connections.
+                maxi= maxi + 20*20*self.intraconnectance[i+1,i+1]
+                
+                #maxi= maxi + 20*20
         
-    def CSV_output(self):   #Outputting trophic data in machine readable format.
+        return maxi
+    
+    
+    def trend_plot(self):         #Collates information.
         
-        top=max(self.masterbinder['Trophic Level'])
-        #Find max trophic level.
-        
-        os.chdir("Results/Varying/Connectance/Set I/Trends")
-        if os.path.isdir("Trophic Data")==False:
-            os.mkdir("Trophic Data")
-        os.chdir("Trophic Data")
-        
-        for k in range(0,top+1):
-        
-            output=np.zeros([len(self.edgecutnum[k]),6])
-        
-            output[:,0]=self.intercol #First column stores the interconnectance data.
-            output[:,1]=self.intracol #Second column stores the intra-connectance data.
-            output[:,2]=self.edgecutnum[k]     #Third column stores the normalised # edge cut data of kth trophic lvl.
-            output[:,3]=self.vercutnum[k]     #Third column stores the normalised # ver cut data of kth trophic lvl.
-            output[:,4]=self.cap_edgeval[k]     #Third column stores the min capacity edge cut data of kth trophic lvl.
-            output[:,5]=self.cap_verval[k]     #Third column stores the min capacity vertex cut data of kth trophic lvl.
-            
-            np.savetxt('Trp Lvl %d.csv' %(k), output, delimiter=",", header="Interconnectance SF, Intraconnectance SF, # Edge Cut, # Ver Cut, Min Cap of Edge Cut, Min Cap of Ver Cut")
-        
-        os.chdir("../../../../../../")
-            
-            
-        
-    def trend_plot(self): #Plotting various metrics of different distributions
-        
-        os.chdir("Results/Varying/Connectance/Set I/Trends")
-        
-        #print("SELF Avg Edge Cut: "+str(self.avg_edge_cut))
+        os.chdir("Results/Varying/Node-Connectance/Set VI/Trends")
         
         if(os.path.isdir("Rickle Pickle")==False):
                 os.mkdir("Rickle Pickle")
@@ -352,10 +349,13 @@ class FordFulkerson_Connectance(FordFulkerson):
         
         top=max(self.masterbinder['Trophic Level'])
         
-        x=self.intercon         #Interconnections along x-axis
-        y=self.intracon         #Intraconnections along y-axis.
+        tr=1
+        
+        x= self.nodenum
+        y= self.intercon
         
         for t in range(0,top+1):
+            
             #Plotting as per trophic level.
             
             
@@ -370,8 +370,9 @@ class FordFulkerson_Connectance(FordFulkerson):
             surf =ax.plot_trisurf(x, y, z, cmap='viridis', edgecolor='none')
             fig.colorbar(surf, shrink=0.5)
             ax.set_title("Avg # Edge Cut Tr Level %d" %(t))
-            ax.set_xlabel("Inter-connections")
-            ax.set_ylabel("Intra-connections")
+            ax.set_xlabel("Number of Nodes in Trophic Level %d" %(tr))
+            ax.set_ylabel("Inter-connection Scaling Factor")
+            ax.view_init(elev=20.0, azim=-30.0)
             plt.savefig("Triangulation # Edge Cut Tr Level %d.png" %(t), dpi=300)
             pickle.dump(fig, open("Rickle Pickle/Level %d Triangulation # Edge Cut.pickle" %(t), 'wb'))
             plt.show()
@@ -387,8 +388,10 @@ class FordFulkerson_Connectance(FordFulkerson):
             surf =ax.plot_trisurf(x, y, z, cmap='viridis', edgecolor='none')
             fig.colorbar(surf, shrink=0.5)
             ax.set_title("Avg Edge Max Flow Val Tr Level %d" %(t))
-            ax.set_xlabel("Inter-connections")
-            ax.set_ylabel("Intra-connections")
+            ax.set_ylabel("Inter-connection Scaling Factor")
+            ax.set_xlabel("Number of Nodes in Trophic Level %d" %(tr))
+            #ax.set_zlabel("Avg Min Edge Cut Capacity of Tr Level %d.png" %(t))
+            ax.view_init(elev=20.0, azim=-30.0)
             plt.savefig("Triangulation Avg Min Edge Cut Capacity Tr Level %d.png" %(t), dpi=300)
             pickle.dump(fig, open("Rickle Pickle/Level %d Triangulation Avg Min Edge Cut Capacity.pickle" %(t), 'wb'))
             plt.show()
@@ -405,8 +408,10 @@ class FordFulkerson_Connectance(FordFulkerson):
             surf =ax.plot_trisurf(x, y, z, cmap='viridis', edgecolor='none')
             fig.colorbar(surf, shrink=0.5)
             ax.set_title("Avg Node Max Flow Val Level %d" %(t))
-            ax.set_xlabel("Inter-connections")
-            ax.set_ylabel("Intra-connections")
+            ax.set_ylabel("Inter-connection Scaling Factor")
+            ax.set_xlabel("Number of Nodes in Trophic Level %d" %(tr))
+            #ax.set_zlabel("Avg Min Node Cut Capacity of Tr Level %d.png" %(t))
+            ax.view_init(elev=20.0, azim=-30.0)
             plt.savefig("Triangulation Avg Min Node Cut Capacity Tr Level %d.png" %(t), dpi=300)
             pickle.dump(fig, open("Rickle Pickle/Level %d Triangulation Avg Min Node Cut Capacity.pickle" %(t), 'wb'))
             plt.show()
@@ -423,8 +428,9 @@ class FordFulkerson_Connectance(FordFulkerson):
             surf =ax.plot_trisurf(x, y, z, cmap='viridis', edgecolor='none')
             fig.colorbar(surf, shrink=0.5)
             ax.set_title("Avg # Node Cut Tr Level %d" %(t))
-            ax.set_xlabel("Inter-connections")
-            ax.set_ylabel("Intra-connections")
+            ax.set_ylabel("Inter-connection Scaling Factor")
+            ax.set_xlabel("Number of Nodes in Trophic Level %d" %(tr))
+            ax.view_init(elev=20.0, azim=-30.0)
             plt.savefig("Triangulation # Node Cut Tr Level %d.png" %(t), dpi=300)
             pickle.dump(fig, open("Rickle Pickle/Level %d Triangulation # Node Cut.pickle" %(t), 'wb'))
             plt.show()
@@ -447,11 +453,12 @@ class FordFulkerson_Connectance(FordFulkerson):
             
             for p in range(0,len(self.intercon)):
                 #Plotting SD bars
-                ax.plot([x[p], x[p]], [y[p], y[p]], [z[p] + zerr[p], z[p] - zerr[p]], marker="_", markerfacecolor='k')
+                ax.plot([x[p], x[p]], [y[p], y[p]], [z[p] + zerr[p], z[p] - zerr[p]], marker="_", markeredgecolor='k')
                 
             ax.set_title("Avg # Edge Cut Tr Level %d" %(t))
-            ax.set_xlabel("Inter-connections")
-            ax.set_ylabel("Intra-connections")
+            ax.set_xlabel("Number of Nodes in Trophic Level %d" %(tr))
+            ax.set_ylabel("Inter-connection Scaling Factor")
+            ax.view_init(elev=20.0, azim=-30.0)
             plt.savefig("Scatter # Edge Cut Tr Level %d.png" %(t), dpi=300)
             pickle.dump(fig, open("Rickle Pickle/Level %d Scatter # Edge Cut.pickle" %(t), 'wb'))
             plt.show()
@@ -472,10 +479,12 @@ class FordFulkerson_Connectance(FordFulkerson):
                 ax.plot([x[p], x[p]], [y[p], y[p]], [z[p] + zerr[p], z[p] - zerr[p]], marker="_", markerfacecolor='k')
                 
             ax.set_title("Avg Edge Max Flow Val Level %d" %(t))
-            ax.set_xlabel("Inter-connections")
-            ax.set_ylabel("Intra-connections")
+            ax.set_xlabel("Number of Nodes in Trophic Level %d" %(tr))
+            ax.set_ylabel("Inter-connection Scaling Factor")
+            ax.view_init(elev=20.0, azim=-30.0)
             plt.savefig("Scatter Avg Min Edge Cut Capacity Tr Level %d.png" %(t), dpi=300)
             pickle.dump(fig, open("Rickle Pickle/Level %d Scatter Avg Min Edge Cut Capacity.pickle" %(t), 'wb'))
+            plt.show()
             plt.close()
             
             
@@ -495,8 +504,9 @@ class FordFulkerson_Connectance(FordFulkerson):
                 ax.plot([x[p], x[p]], [y[p], y[p]], [z[p] + zerr[p], z[p] - zerr[p]], marker="_", markerfacecolor='k')
                 
             ax.set_title("Avg Node Max Flow Val Level %d" %(t))
-            ax.set_xlabel("Inter-connections")
-            ax.set_ylabel("Intra-connections")
+            ax.set_xlabel("Number of Nodes in Trophic Level %d" %(tr))
+            ax.set_ylabel("Inter-connection Scaling Factor")
+            ax.view_init(elev=20.0, azim=-30.0)
             plt.savefig("Scatter Avg Min Node Cut Capacity Tr Level %d.png" %(t), dpi=300)
             pickle.dump(fig, open("Rickle Pickle/Level %d Scatter Avg Min Node Cut Capacity.pickle" %(t), 'wb'))
             plt.show()
@@ -517,8 +527,9 @@ class FordFulkerson_Connectance(FordFulkerson):
                 ax.plot([x[p], x[p]], [y[p], y[p]], [z[p] + zerr[p], z[p] - zerr[p]], marker="_", markerfacecolor='k')
                 
             ax.set_title("Avg # Node Cut Tr Level %d" %(t))
-            ax.set_xlabel("Inter-connections")
-            ax.set_ylabel("Intra-connections")
+            ax.set_xlabel("Number of Nodes in Trophic Level %d" %(tr))
+            ax.set_ylabel("Inter-connection Scaling Factor")
+            ax.view_init(elev=20.0, azim=-30.0)
             plt.savefig("Scatter # Node Cut Tr Level %d.png" %(t), dpi=300)
             pickle.dump(fig, open("Rickle Pickle/Level %d Scatter # Node Cut.pickle" %(t), 'wb'))
             plt.show()
@@ -528,11 +539,28 @@ class FordFulkerson_Connectance(FordFulkerson):
         os.chdir("../../../../../")
         print("Current working Directory:\t %s" %(os.getcwd()))
         
-            
         
-
-obj=FordFulkerson_Connectance()
+        
+obj=FordFulkerson_NodeConnectance()
                 
 if __name__ == '__main__':
     obj.inner_temple()
+                
+        
+        
+        
+        
+        
+            
+        
+        
+        
+        
+        
+        
+        
+                
+                
+            
+            
             

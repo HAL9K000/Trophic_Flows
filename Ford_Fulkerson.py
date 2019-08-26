@@ -112,21 +112,25 @@ class FordFulkerson:
             #In case of encountering min capacity of cut out of 65 cuts.
             self.min_edge_flowval=cut_val
             self.min_cap_e=[n]
+            
         
         elif(cut_val==self.min_edge_flowval):
             #In case of a tie
             self.min_edge_flowval=cut_val
             self.min_cap_e.append(n)
             
+            
         if(cut_val>self.max_edge_flowval):
             #In case of encountering max capacity of cut out of 65 cuts.
             self.max_edge_flowval=cut_val
             self.max_cap_e=[n]
             
+            
         elif(cut_val == self.max_edge_flowval):
             #In case of a tie.
             self.max_edge_flowval=cut_val
             self.max_cap_e.append(n)
+            
             
         temp=edge_cut
         temp.append(cut_val)
