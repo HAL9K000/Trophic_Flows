@@ -159,7 +159,7 @@ class I_O:
                 for p in self.DirGraph.predecessors(n):
                     if(n==p):
                         # For cannibalistic edges use trophic level to estimate capacity
-                        ncap+=10**(self.m-trophiclvl[n])
+                        ncap-=10**(self.m-trophiclvl[n])
                     else:    
                         ncap+= edgecap[(p,n)]
                 self.DirGraph.nodes[n]['node_cap']=ncap

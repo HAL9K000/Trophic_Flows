@@ -34,9 +34,9 @@ class ArtificialNet_C(ArtificialNet):
         #To be defined later
         self.m=0
         
-        self.connectance_def= {(0, 0): 0.0, (0, 1): 0.11, (1, 1): 0.05, 
-                          (1, 2): 0.11, (2, 2): 0.027777777777777776, 
-                          (2, 3): 0.11, (2, 1): 0.006122448979591836, 
+        self.connectance_def= {(0, 0): 0.0, (0, 1): 0.24, (1, 1): 0.05, 
+                          (1, 2): 0.15, (2, 2): 0.027777777777777776, 
+                          (2, 3): 0.0, (2, 1): 0.006122448979591836, 
                           (3, 3): 0.0, (3, 2): 0.0, (3, 1): 0.0}
         '''This is the default value of self-connectance, where the inter-trophic connectivity is set to 0.11
             while intra-trophic connectivity is based on the Tuesday Lake dataset'''
@@ -61,9 +61,9 @@ class ArtificialNet_C(ArtificialNet):
         f.write("And 3.1 represents the scaling factor applied to the default intra-connectivity, ie. 3.1*0.05 for (1,1)\n")
         f.flush(); f.close()
         
-        if(os.path.isdir("Set I")==False):
-            os.mkdir("Set I")
-        os.chdir("Set I")
+        if(os.path.isdir("Set II")==False):
+            os.mkdir("Set II")
+        os.chdir("Set II")
         
         a=np.linspace(0.6,5,num=12)
         b=np.linspace(0.0,2.5,num=6)

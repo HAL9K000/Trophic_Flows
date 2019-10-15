@@ -1,3 +1,20 @@
+Set I:
+
+	connectance: {(0, 0): 0.0, (0, 1): 0.11, (1, 1): 0.05, 
+                          (1, 2): 0.11, (2, 2): 0.027777777777777776, 
+                          (2, 3): 0.11, (2, 1): 0.006122448979591836, 
+                          (3, 3): 0.0, (3, 2): 0.0, (3, 1): 0.0}
+
+Set II:
+
+	Connectance based on Ythan91 data.
+	
+	connectance: {(0, 0): 0.0, (0, 1): 0.24, (1, 1): 0.05, 
+                          (1, 2): 0.15, (2, 2): 0.027777777777777776, 
+                          (2, 3): 0.11, (2, 1): 0.006122448979591836, 
+                          (3, 3): 0.0, (3, 2): 0.0, (3, 1): 0.0}
+
+
 A note on the listing below:
 In 0.6_3.1 the first number denotes the scaling factor of the inter-connectivity, i.e. 0.6*0.11
 And 3.1 represents the scaling factor applied to the default intra-connectivity, ie. 3.1*0.05 for (1,1)

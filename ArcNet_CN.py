@@ -28,12 +28,19 @@ class ArtificialNet_C_N(ArtificialNet):
             self.config.append(float(x/self.n))
         # self.config stores the vertice distribution ratio among trophic levels.
         
-        self.connectance_def= {(0, 0): 0.0, (0, 1): 0.11, (1, 1): 0.05, 
+        '''self.connectance_def= {(0, 0): 0.0, (0, 1): 0.11, (1, 1): 0.05, 
                           (1, 2): 0.11, (2, 2): 0.027777777777777776, 
                           (2, 3): 0.11, (2, 1): 0.006122448979591836, 
-                          (3, 3): 0.0, (3, 2): 0.0, (3, 1): 0.0}
+                          (3, 3): 0.0, (3, 2): 0.0, (3, 1): 0.0}'''
         
         '''Defining the raw template of the connectance which is to be varied.'''
+        
+        self.connectance_def= {(0, 0): 0.0, (0, 1): 0.24, (1, 1): 0.05, 
+                          (1, 2): 0.15, (2, 2): 0.027777777777777776, 
+                          (2, 3): 0.0, (2, 1): 0.006122448979591836, 
+                          (3, 3): 0.0, (3, 2): 0.0, (3, 1): 0.0}
+        
+        '''Based on Ythan91 data.'''
         
         self.string='Connectance_NodeNum'
         #To be defined later, check ArcNet.py
@@ -51,22 +58,27 @@ class ArtificialNet_C_N(ArtificialNet):
         if(os.path.isdir("Node-Connectance")==False):
             os.mkdir("Node-Connectance")
         os.chdir("Node-Connectance")
-        #Changing to node-connectance directory  
+        #Changing to node-connectance directory 
+        
+        if(os.path.isdir("InterConnectance")==False):
+            os.mkdir("InterConnectance")
+        os.chdir("InterConnectance")
         
         #Creating a file which explains the storage nomenclature
         f=open("nomenclature.txt", 'w')
         f.write("A note on the listing below:\n")
         
-        f.write("In [35,20,20]_0.6 the second number denotes the scaling factor of the inter-connectivity, i.e. 0.6*0.11\n")
+        f.write("In [35,20,20]_0.6 the second number denotes the scaling factor of the intra-connectivity,\n")
         f.write("Meanwhile the [35, 20,20] represents the node distribution\n")
         f.flush(); f.close()
         
-        if(os.path.isdir("Set VII")==False):
-            os.mkdir("Set VII")
-        os.chdir("Set VII")
+        if(os.path.isdir("Set III_Yth")==False):
+            os.mkdir("Set III_Yth")
+        os.chdir("Set III_Yth")
         
-        a=np.linspace(0.6,5.0,num=13)
+        a=np.linspace(0.6,3.8,num=9)
         # The range over which inter-connectivity is scaled over.
+        #a=np.append(a,[0.0])
         
         for i in range(5,55,5):
             # Changing the node distribution from 5 to 60

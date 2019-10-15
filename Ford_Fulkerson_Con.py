@@ -27,7 +27,7 @@ class FordFulkerson_Connectance(FordFulkerson):
         os.chdir("../../")
         #Due to  __init__(self) in base class
         os.chdir(r"Machine_Readable_Data\Mult\Connectance")
-        self.config=[name for name in os.listdir("Set I") if os.path.isdir(os.path.join("Set I", name))]
+        self.config=[name for name in os.listdir("Set II") if os.path.isdir(os.path.join("Set II", name))]
         #Gets the names of all sub-directories in "Machine_Readable_Data\Mult\Connectance"
         #Change Set number for different connections, Also change it in inner_temple for read operations.
         os.chdir("../../../")
@@ -57,6 +57,14 @@ class FordFulkerson_Connectance(FordFulkerson):
         self.storage_vex={}
         #A dict that will store interesting data on vertex cuts
         
+        self.connectance_def= {(0, 0): 0.0, (0, 1): 0.24, (1, 1): 0.05, 
+                          (1, 2): 0.15, (2, 2): 0.027777777777777776, 
+                          (2, 3): 0.0, (2, 1): 0.006122448979591836, 
+                          (3, 3): 0.0, (3, 2): 0.0, (3, 1): 0.0}
+        '''This is the default value of self-connectance, where both the inter-trophic connectivity &
+            intra-trophic connectivity is based on the Ythan91 dataset'''
+        
+        
         self.string="connectance"
         
         self.r=0    #Used as a flag to denote first instantiation of self.trend_setter(), callable via self.sanctum()
@@ -79,7 +87,7 @@ class FordFulkerson_Connectance(FordFulkerson):
         for x in self.config:
             #Iterating over the different sub-directories.
             
-            self.DirGraph=nex.read_graphml(r"Machine_Readable_Data\Mult\Connectance\Set I\%s\Connectance_Annotated.graphml" %(x))
+            self.DirGraph=nex.read_graphml(r"Machine_Readable_Data\Mult\Connectance\Set II\%s\Connectance_Annotated.graphml" %(x))
             
             #Ascertaining the scaling factors
             p= x.find("_")
@@ -96,9 +104,9 @@ class FordFulkerson_Connectance(FordFulkerson):
                 os.mkdir("Connectance")
             os.chdir("Connectance")
             
-            if(os.path.isdir("Set I")==False):
-                os.mkdir("Set I")
-            os.chdir("Set I")
+            if(os.path.isdir("Set II")==False):
+                os.mkdir("Set II")
+            os.chdir("Set II")
             
             if(os.path.isdir(x)==False):
                 os.mkdir(x)
@@ -111,7 +119,7 @@ class FordFulkerson_Connectance(FordFulkerson):
             #Clearing the stables.
             
             os.chdir("../../../../")
-            #Now in root directory, works as control has shifted to Set I directtory after execution of sanctum()
+            #Now in root directory, works as control has shifted to Set II directtory after execution of sanctum()
             print("Current working Directory:\t %s" %(os.getcwd()))
             
             
@@ -144,7 +152,7 @@ class FordFulkerson_Connectance(FordFulkerson):
         print("MC Zulu")
         
         os.chdir("../../")
-        #Now in Set I Directory.
+        #Now in Set II Directory.
         
         if(os.path.isdir("Trends")==False):
             os.mkdir("Trends")
@@ -260,17 +268,17 @@ class FordFulkerson_Connectance(FordFulkerson):
         maxi=20.0
         
         for p in range(0,t):
-            #maxi= maxi+ self.intercon[i]*20*20*0.11
-            maxi= maxi + 20*20
+            maxi= maxi+ self.intercon[i]*20*20*self.connectance_def[(p,p+1)]
+            #maxi= maxi + 20*20
             
             if(p==0):
                 #t=1 exists, i.e. there is at least trophic level one in the system.
-                #maxi= maxi+ self.intracon[i]*20*20*0.05
-                maxi= maxi + 20*20
+                maxi= maxi+ self.intracon[i]*20*20*self.connectance_def[(p+1,p+1)]
+                #maxi= maxi + 20*20
             elif(p==1):
                 #t=2 exists. Accounting for all possible (2,2) connections.
-                #maxi= maxi+self.intracon[i]*20*20*0.027
-                maxi= maxi + 20*20
+                maxi= maxi+self.intracon[i]*20*20*self.connectance_def[(p+1,p+1)]
+                #maxi= maxi + 20*20
                 
         edgecutnum[:]=[x/maxi for x in edgecutnum]
         vercutnum[:]=[x/maxi for x in vercutnum]
@@ -300,7 +308,7 @@ class FordFulkerson_Connectance(FordFulkerson):
         top=max(self.masterbinder['Trophic Level'])
         #Find max trophic level.
         
-        os.chdir("Results/Varying/Connectance/Set I/Trends")
+        os.chdir("Results/Varying/Connectance/Set II/Trends")
         if os.path.isdir("Trophic Data")==False:
             os.mkdir("Trophic Data")
         os.chdir("Trophic Data")
@@ -324,7 +332,7 @@ class FordFulkerson_Connectance(FordFulkerson):
         
     def trend_plot(self): #Plotting various metrics of different distributions
         
-        os.chdir("Results/Varying/Connectance/Set I/Trends")
+        os.chdir("Results/Varying/Connectance/Set II/Trends")
         
         #print("SELF Avg Edge Cut: "+str(self.avg_edge_cut))
         
